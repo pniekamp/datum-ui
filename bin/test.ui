@@ -1,0 +1,356 @@
+﻿#
+# test ui file
+#
+
+#define WM_MOVE 5
+#define WM_SIZE 6
+#define WM_CLOSE 7
+
+template Label
+{
+  font: "Roboto-Bold"
+  fontheight: 17
+  opacity: enabled ? 1.0 : 0.5
+}
+
+template Field
+{
+  font: "Roboto-Bold"
+  fontheight: 17
+  opacity: enabled ? 1.0 : 0.5
+}
+
+template Button1 : Button
+{
+  width: 80
+  height: 32
+  font: "Roboto-Bold"
+  fontheight: 17
+  backgroundcolor: hovered ? #111 : #000
+  backgroundcolor.a: pressed ? 0.66 : 0.4
+  opacity: enabled ? 1.0 : 0.5
+}
+
+template Button2 : Button
+{
+  width: 80
+  height: 36
+  font: "Roboto-Bold"
+  fontheight: 17
+  backgroundimage: "ui:0.0234,0.0234,0.383,0.289"
+  backgroundlayer: hovered + pressed
+  opacity: enabled ? 1.0 : 0.5
+
+  Animation
+  {
+    target: backgroundlayer
+    duration: 0.2
+  }  
+}
+
+template CheckBox1 : CheckButton
+{
+  width: 80
+  height: 22
+  font: "Roboto-Bold"
+  fontheight: 17
+  outercolor: hovered ? #000 : #222
+  outercolor.a: pressed ? 0.4 : 0.1
+  innercolor.a: 0.5 * checked
+  opacity: enabled ? 1.0 : 0.5
+}
+
+template CheckBox2 : CheckButton
+{
+  width: 80
+  height: 26
+  font: "Roboto-Bold"
+  fontheight: 17
+  image: "ui:0.398,0.0234,0.570,0.195"
+  imagetint.a: (hovered && !pressed) ? 0.88 : 1.0
+  imagelayer: checked
+  opacity: enabled ? 1.0 : 0.5
+}
+
+template RadioButton : CheckButton
+{
+  width: 80
+  height: 26
+  font: "Roboto-Bold"
+  fontheight: 17
+  image: "ui:0.398,0.211,0.570,0.383"
+  imagetint.a: (hovered && !pressed) ? 0.88 : 1.0
+  imagelayer: checked
+  opacity: enabled ? 1.0 : 0.5
+}
+
+template Slider1 : Slider
+{
+  width: 26
+  height: 26
+  inset: 11
+  backgroundcolor.a: pressed ? 0.4 : 0.4
+  handletint: hovered || pressed ? #DDD : #FFF
+  opacity: enabled ? 1.0 : 0.5  
+}
+
+template Slider2 : Slider
+{
+  width: 26
+  height: 26
+  inset: 10
+  backgroundimage: "ui:0.0234,0.304,0.383,0.367"
+  handleimage: "ui:0.390,0.398,0.578,0.586"
+  handlelayer: hovered + pressed  
+  opacity: enabled ? 1.0 : 0.5  
+}
+
+template ScrollBar1 : ScrollBar
+{
+  width: 12
+  height: 12
+  handletint: #000
+  handletint.a: hovered || pressed ? 0.5 : 0.2
+  handleinset: 3
+  opacity: enabled ? 1.0 : 0.5
+  visible: size < 1
+}
+
+template ScrollBar2 : ScrollBar
+{
+  width: 12
+  height: 12
+  handleimage: "ui:0.0234,0.304,0.383,0.367"
+  handletint: #333
+  handletint.a: hovered || pressed ? 0.6 : 0.3
+  handleslice: 0.5
+  opacity: enabled ? 1.0 : 0.5  
+  visible: size < 1
+}
+
+template ScrollArea1 : ScrollArea
+{
+  handletint: #4000
+  handleinset: 3
+}
+
+template ScrollArea2 : ScrollArea
+{
+  handleimage: "ui:0.0234,0.304,0.383,0.367"
+  handletint: #4333
+  handleslice: 0.5
+}
+
+template Window : DragButton
+{
+  backgroundimage: "ui:0.578,0.0234,0.855,0.227"
+  
+  //action: ${WM_MOVE}
+
+  DragButton
+  {
+    x: 0
+    y: 0
+    z: 1000
+    width: parent.width/parent.scale
+    height: 20
+    backgroundcolor: #2000
+    action: ${WM_MOVE}
+  }
+  
+  DragButton
+  {
+    x: parent.width/parent.scale - 20
+    y: parent.height/parent.scale - 20
+    z: 1000
+    width: 22
+    height: 22
+    backgroundcolor: #2000
+    action: ${WM_SIZE}
+  }
+}
+
+Window
+{
+  ScrollArea2
+  {
+    x: 8
+    y: 24
+    scale: 1
+    width: (parent.width/parent.scale - 16) / scale
+    height: (parent.height/parent.scale - 28) / scale
+    contentwidth: 350
+    contentheight: 450
+    //clip: true
+
+    Column
+    {
+      width: parent.contentwidth
+      height: parent.contentheight
+      spacing: 10
+
+      Row
+      {
+        id: row
+        height: 50
+        spacing: 10
+
+        Button1
+        {
+          text: "Test"
+        }
+
+        Button1
+        {
+          y: 10
+          text: "Test"
+        }
+        
+        Button2
+        {
+          text: "Test"
+        }
+      }
+
+      Row
+      {
+        height: 30
+        spacing: 10
+
+        CheckBox1
+        {
+          text: "Test"
+        }
+        
+        CheckBox2
+        {
+          text: "Test"
+        }
+      
+        RadioButton
+        {
+          text: "Test"
+        }
+      }
+      
+      Row
+      {
+        height: 40
+        spacing: 10
+        
+        Slider1
+        {
+          id: slider
+          width: 120      
+          value: 0.5
+          minvalue: 0
+          maxvalue: 1
+        }
+        
+        Slider2
+        {
+          width: 120
+          value: 0.5
+          minvalue: 0
+          maxvalue: 1
+        }
+      }
+      
+      TextArea
+      {
+        width: 180
+        height: 24
+        font: "Roboto-Bold:17"
+        interactive: true
+        horizontalalign: TextArea.Center
+        text: "Hello World"
+      }
+      
+      LineEdit
+      {
+        width: 180
+        height: 24
+        font: "Roboto-Bold"
+        fontheight: 17
+        bordercolor: focused ? #04F : #888
+        text: "Hello World"
+      }
+      
+      ListBox
+      {
+        width: 180
+        height: 80
+        font: "Roboto-Bold"
+        fontheight: 17
+        bordercolor: focused ? #04F : #888       
+        handleimage: "ui:0.0234,0.304,0.383,0.367"
+        handletint: #333
+        handletint.a: hovered ? 0.6 : 0.3
+        handleslice: 0.5
+        text: "Line 1\nLine 2\nLine 3\nItem 4\nLine 5\nVery Long Item Line Text Number 6\nItem 7\nItem 8\nItem 9"
+      }
+      
+      GroupBox
+      {
+        width: 180
+        height: checked ? 80 : 32
+        font: "Roboto-Bold"
+        fontheight: 17
+        image: "ui:0.398,0.0234,0.570,0.195"
+        imagetint.a: (hovered && !pressed) ? 0.88 : 1.0
+        imagelayer: checked
+        opacity: enabled ? 1.0 : 0.5
+        borderwidth: 1
+        bordercolor: #888   
+        backgroundcolor: #FFF
+        
+        text: "Group"
+        
+        Rectangle
+        {
+          color: #500
+          width: parent.width - 2*parent.padding
+          height: 44
+          visible: parent.height > 32
+        }
+
+        Animation
+        {
+          target: height
+          duration: 01.05
+          clip: true
+        }
+      }
+
+      ComboBox
+      {
+        width: 130
+        height: 24
+        font: "Roboto-Bold"
+        fontheight: 17
+        backgroundimage: "ui:0.0234,0.0234,0.383,0.289"
+        backgroundlayer: hovered + pressed
+        dropimage: "ui:0.437,0.828,0.539,0.891"
+        dropimagetint: #222
+        handleimage: "ui:0.0234,0.304,0.383,0.367"
+        handletint: #4333
+        handleslice: 0.5
+        text: "Line 1\nLine 2\nLine 3\nItem 4\nLine 5\nVery Long Item Line Text Number 6\nItem 7\nItem 8\nItem 9"
+      }
+    }
+    
+    Rectangle
+    {
+      x: slider.x + slider.width*slider.value - 4
+      y: 130
+      width: 8
+      height: 10
+      color: #500
+      
+      Animation
+      {
+        target: x
+      }
+    }     
+  } 
+}
