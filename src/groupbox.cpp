@@ -29,6 +29,14 @@ namespace Ui
   }
 
 
+  ///////////////////////// request_item //////////////////////////////////////
+  template<>
+  void Context::request_item<GroupBox>(PlatformInterface &platform, Node *node, int *ready, int *total)
+  {
+    request_item<CheckButton>(platform, node, ready, total);
+  }
+
+
   ///////////////////////// prepare_item //////////////////////////////////////
   template<>
   void Context::prepare_item<GroupBox>(Node *node)
@@ -37,11 +45,8 @@ namespace Ui
 
     auto item = item_cast<GroupBox>(node);
 
-    auto padding = item->scale * item->padding;
-    auto headersize = item->scale * (item->image ? item->image->height : 16) + 2*padding;
-
-    float dx = padding / item->scale;
-    float dy = headersize / item->scale;
+    float dx = item->padding;
+    float dy = (item->image ? item->image->height : 16) + 2*item->padding;
 
     for(auto child = node->firstchild; child; child = child->nextsibling)
     {

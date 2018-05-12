@@ -25,8 +25,6 @@ namespace Ui
   template<>
   void Context::update_item<ScrollArea>(Node *node, GameInput const &input, float dt)
   {
-    update_item<Item>(node, input, dt);
-
     auto item = item_cast<ScrollArea>(node);
 
     if (pressitem != item)
@@ -98,6 +96,16 @@ namespace Ui
   }
 
 
+  ///////////////////////// request_item //////////////////////////////////////
+  template<>
+  void Context::request_item<ScrollArea>(PlatformInterface &platform, Node *node, int *ready, int *total)
+  {
+    auto item = item_cast<ScrollArea>(node);
+
+    request(platform, spritecatalog, item->handleimage, ready, total);
+  }
+
+
   ///////////////////////// prepare_item //////////////////////////////////////
   template<>
   void Context::prepare_item<ScrollArea>(Node *node)
@@ -134,10 +142,7 @@ namespace Ui
     if (item->visible && item->interactive && item->wheelscroll && item->contains(mousepos) && contains(buildstate.cliprect(), mousepos))
       hoveritem = item;
 
-    for(auto child = node->firstchild; child; child = child->nextsibling)
-    {
-      render(spritelist, buildstate, child);
-    }
+    render_item<Item>(spritelist, buildstate, node);
 
     if (item->visible && item->interactive && contains(buildstate.cliprect(), mousepos))
     {

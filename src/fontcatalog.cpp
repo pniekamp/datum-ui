@@ -55,6 +55,24 @@ namespace Ui
   }
 
 
+  ///////////////////////// FontCatalog::count ////////////////////////////////
+  size_t FontCatalog::count() const
+  {
+    leap::threadlib::SyncLock lock(m_mutex);
+
+    return m_entries.size();
+  }
+
+
+  ///////////////////////// FontCatalog::entry ////////////////////////////////
+  leap::string_view FontCatalog::entry(size_t i) const
+  {
+    leap::threadlib::SyncLock lock(m_mutex);
+
+    return leap::string_view(m_entries[i]->name, m_entries[i]->namelen);
+  }
+
+
   ///////////////////////// FontCatalog::find /////////////////////////////////
   TypeFace const *FontCatalog::find(leap::string_view name) const
   {
@@ -140,28 +158,17 @@ namespace Ui
   }
 
 
-  ///////////////////////// request_resources /////////////////////////////////
-  bool FontCatalog::request_resources(DatumPlatform::PlatformInterface &platform)
+  ///////////////////////// request /////////////////////////////////////////
+  void FontCatalog::request(DatumPlatform::PlatformInterface &platform, TypeFace const *typeface)
   {
-    leap::threadlib::SyncLock lock(m_mutex);
+    m_resources->request(platform, typeface);
+  }
 
-    bool ready = true;
 
-    for(auto &entry : m_entries)
-    {
-      m_resources->request(platform, entry->typeface);
-
-      for(size_t i = 0; i < entry->instancecount; ++i)
-      {
-        m_resources->request(platform, entry->instances[i]);
-
-        ready &= entry->instances[i]->ready();
-      }
-
-      ready &= entry->typeface->ready();
-    }
-
-    return ready;
+  ///////////////////////// request /////////////////////////////////////////
+  void FontCatalog::request(DatumPlatform::PlatformInterface &platform, Font const &font)
+  {
+    m_resources->request(platform, font);
   }
 
 
@@ -188,11 +195,4 @@ namespace Ui
       }
     }
   }
-}
-
-
-///////////////////////// request ///////////////////////////////////////////
-void request(DatumPlatform::PlatformInterface &platform, ResourceManager &resources, Ui::FontCatalog &fonts, int *ready, int *total)
-{
-
 }

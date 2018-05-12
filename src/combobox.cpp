@@ -73,6 +73,13 @@ namespace Ui
   }
 
 
+  ///////////////////////// request_item //////////////////////////////////////
+  template<>
+  void Context::request_item<ComboBoxDropList>(PlatformInterface &platform, Node *node, int *ready, int *total)
+  {
+  }
+
+
   ///////////////////////// prepare_item //////////////////////////////////////
   template<>
   void Context::prepare_item<ComboBoxDropList>(Node *node)
@@ -120,8 +127,6 @@ namespace Ui
   template<>
   void Context::update_item<ComboBox>(Node *node, GameInput const &input, float dt)
   {
-    update_item<Control>(node, input, dt);
-
     auto item = item_cast<ComboBox>(node);
 
     if (!inputaccepted && hoveritem == item)
@@ -219,6 +224,21 @@ namespace Ui
 
     item->pressed = (pressitem == item) && (hoveritem == item || dragging);
     item->dropped = (popupowner == item);
+
+    update_item<Control>(node, input, dt);
+  }
+
+
+  ///////////////////////// request_item //////////////////////////////////////
+  template<>
+  void Context::request_item<ComboBox>(PlatformInterface &platform, Node *node, int *ready, int *total)
+  {
+    auto item = item_cast<ComboBox>(node);
+
+    request(platform, spritecatalog, item->dropimage, ready, total);
+    request(platform, spritecatalog, item->handleimage, ready, total);
+
+    request_item<Control>(platform, node, ready, total);
   }
 
 

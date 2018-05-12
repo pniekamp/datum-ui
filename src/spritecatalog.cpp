@@ -42,7 +42,7 @@ namespace Ui
     entry->namelen = name.size();
     strlcpy(namestr, name.data(), name.size() + 1);
 
-    entry->spritesheet = m_resources->create<Texture>(asset, Texture::Format::SRGBA);
+    entry->spriteatlas = m_resources->create<Texture>(asset, Texture::Format::SRGBA);
 
     entry->instancecount = 0;
 
@@ -52,6 +52,41 @@ namespace Ui
     }
 
     m_entries.push_back(entry);
+  }
+
+
+  ///////////////////////// SpriteCatalog::count //////////////////////////////
+  size_t SpriteCatalog::count() const
+  {
+    leap::threadlib::SyncLock lock(m_mutex);
+
+    return m_entries.size();
+  }
+
+
+  ///////////////////////// SpriteCatalog::entry //////////////////////////////
+  leap::string_view SpriteCatalog::entry(size_t i) const
+  {
+    leap::threadlib::SyncLock lock(m_mutex);
+
+    return leap::string_view(m_entries[i]->name, m_entries[i]->namelen);
+  }
+
+
+  ///////////////////////// SpriteCatalog::find ///////////////////////////////
+  Texture const *SpriteCatalog::find(leap::string_view name) const
+  {
+    leap::threadlib::SyncLock lock(m_mutex);
+
+    for(auto &entry : m_entries)
+    {
+      if (leap::string_view(entry->name, entry->namelen) == name)
+      {
+        return entry->spriteatlas;
+      }
+    }
+
+    return nullptr;
   }
 
 
@@ -76,7 +111,7 @@ namespace Ui
         {
           size_t i = entry->instancecount++;
 
-          entry->instances[i] = m_resources->create<SpriteSheet>(entry->spritesheet, region, align);
+          entry->instances[i] = m_resources->create<SpriteImage>(entry->spriteatlas, region, align);
 
           entry->refcounts[i]->store(0);
 
@@ -91,28 +126,17 @@ namespace Ui
   }
 
 
-  ///////////////////////// request_resources /////////////////////////////////
-  bool SpriteCatalog::request_resources(DatumPlatform::PlatformInterface &platform)
+  ///////////////////////// request /////////////////////////////////////////
+  void SpriteCatalog::request(DatumPlatform::PlatformInterface &platform, SpriteAtlas const *spriteatlas)
   {
-    leap::threadlib::SyncLock lock(m_mutex);
+    m_resources->request(platform, spriteatlas);
+  }
 
-    bool ready = true;
 
-    for(auto &entry : m_entries)
-    {
-      m_resources->request(platform, entry->spritesheet);
-
-      for(size_t i = 0; i < entry->instancecount; ++i)
-      {
-        m_resources->request(platform, entry->instances[i]);
-
-        ready &= entry->instances[i]->ready();
-      }
-
-      ready &= entry->spritesheet->ready();
-    }
-
-    return ready;
+  ///////////////////////// request /////////////////////////////////////////
+  void SpriteCatalog::request(DatumPlatform::PlatformInterface &platform, Sprite const &sprite)
+  {
+    m_resources->request(platform, sprite);
   }
 
 
@@ -139,12 +163,4 @@ namespace Ui
       }
     }
   }
-
-}
-
-
-///////////////////////// request ///////////////////////////////////////////
-void request(DatumPlatform::PlatformInterface &platform, ResourceManager &resources, Ui::SpriteCatalog &sprites, int *ready, int *total)
-{
-
 }

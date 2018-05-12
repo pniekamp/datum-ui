@@ -26,6 +26,12 @@ namespace Ui
   }
 
   template<>
+  void Context::request_item<Label>(PlatformInterface &platform, Node *node, int *ready, int *total)
+  {
+    request_item<Control>(platform, node, ready, total);
+  }
+
+  template<>
   void Context::prepare_item<Label>(Node *node)
   {
     prepare_item<Control>(node);
@@ -50,6 +56,12 @@ namespace Ui
   }
 
   template<>
+  void Context::request_item<Field>(PlatformInterface &platform, Node *node, int *ready, int *total)
+  {
+    request_item<Control>(platform, node, ready, total);
+  }
+
+  template<>
   void Context::prepare_item<Field>(Node *node)
   {
     prepare_item<Control>(node);
@@ -62,7 +74,6 @@ namespace Ui
 
     render_item<Item>(spritelist, buildstate, node);
   }
-
 }
 
 

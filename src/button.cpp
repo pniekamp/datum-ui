@@ -25,8 +25,6 @@ namespace Ui
   template<>
   void Context::update_item<Button>(Node *node, DatumPlatform::GameInput const &input, float dt)
   {
-    update_item<Control>(node, input, dt);
-
     auto item = item_cast<Button>(node);
 
     if (!inputaccepted && hoveritem == item)
@@ -76,6 +74,18 @@ namespace Ui
     }
 
     item->pressed = (pressitem == item) && (hoveritem == item || dragging);
+
+    update_item<Control>(node, input, dt);
+  }
+
+  template<>
+  void Context::request_item<Button>(PlatformInterface &platform, Node *node, int *ready, int *total)
+  {
+    auto item = item_cast<Button>(node);
+
+    request(platform, spritecatalog, item->image, ready, total);
+
+    request_item<Control>(platform, node, ready, total);
   }
 
   template<>
@@ -129,6 +139,12 @@ namespace Ui
   }
 
   template<>
+  void Context::request_item<CheckButton>(PlatformInterface &platform, Node *node, int *ready, int *total)
+  {
+    request_item<Button>(platform, node, ready, total);
+  }
+
+  template<>
   void Context::prepare_item<CheckButton>(Node *node)
   {
     prepare_item<Button>(node);
@@ -179,20 +195,20 @@ namespace Ui
   }
 
   template<>
+  void Context::request_item<DragButton>(PlatformInterface &platform, Node *node, int *ready, int *total)
+  {
+    request_item<Button>(platform, node, ready, total);
+  }
+
+  template<>
   void Context::prepare_item<DragButton>(Node *node)
   {
     prepare_item<Button>(node);
 
     auto item = item_cast<DragButton>(node);
 
-    if (pressitem == item)
-    {
-      if (dragging)
-      {
-        item->dx = item->unmap(mousepos).x - presspos.x;
-        item->dy = item->unmap(mousepos).y - presspos.y;
-      }
-    }
+    item->dx = (pressitem == item) ? item->unmap(mousepos).x - presspos.x : 0;
+    item->dy = (pressitem == item) ? item->unmap(mousepos).y - presspos.y : 0;
   }
 
   template<>

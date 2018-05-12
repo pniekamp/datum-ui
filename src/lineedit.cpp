@@ -27,8 +27,6 @@ namespace Ui
   template<>
   void Context::update_item<LineEdit>(Node *node, GameInput const &input, float dt)
   {
-    update_item<Control>(node, input, dt);
-
     auto item = item_cast<LineEdit>(node);
 
     auto xbasis = rotate(Vec2(1, 0), item->rotation);
@@ -60,6 +58,8 @@ namespace Ui
         focusitem = item;
         pressitem = item;
       }
+
+      cursor = Cursor::Edit;
     }
 
     if (focusitem == item)
@@ -144,25 +144,25 @@ namespace Ui
           bool accept = false;
 
           if (item->filter & Ui::LineEdit::Alpha)
-            accept |= isalpha(*ch);
+            accept |= (isalpha(*ch) != 0);
 
           if (item->filter & Ui::LineEdit::Digit)
-            accept |= isdigit(*ch);
+            accept |= (isdigit(*ch) != 0);
 
           if (item->filter & Ui::LineEdit::Integer)
-            accept |= isdigit(*ch) || *ch == '-' || *ch == '+';
+            accept |= (isdigit(*ch) != 0 || *ch == '-' || *ch == '+');
 
           if (item->filter & Ui::LineEdit::Decimal)
-            accept |= isdigit(*ch) || *ch == '-' || *ch == '+' || *ch == '.' || *ch == 'e' || *ch == 'E';
+            accept |= (isdigit(*ch) != 0 || *ch == '-' || *ch == '+' || *ch == '.' || *ch == 'e' || *ch == 'E');
 
           if (item->filter & Ui::LineEdit::Punct)
-            accept |= ispunct(*ch);
+            accept |= (ispunct(*ch) != 0);
 
           if (item->filter & Ui::LineEdit::Space)
             accept |= (*ch == ' ');
 
           if (item->filter & Ui::LineEdit::Extended)
-            accept |= (*ch & 0x80);
+            accept |= ((*ch & 0x80) != 0);
 
           if (accept)
             intputtext[len++] = *ch;
@@ -299,6 +299,8 @@ namespace Ui
         pressitem = nullptr;
       }
 
+      cursor = Cursor::Edit;
+
       inputaccepted = true;
     }
 
@@ -306,6 +308,16 @@ namespace Ui
       item->selectionbeg = item->selectionend = -1;
 
     item->focused = (focusitem == item);
+
+    update_item<Control>(node, input, dt);
+  }
+
+
+  ///////////////////////// request_item //////////////////////////////////////
+  template<>
+  void Context::request_item<LineEdit>(PlatformInterface &platform, Node *node, int *ready, int *total)
+  {
+    request_item<Control>(platform, node, ready, total);
   }
 
 

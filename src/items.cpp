@@ -24,7 +24,11 @@ namespace Ui
   template<>
   void Context::update_item<Rectangle>(Node *node, GameInput const &input, float dt)
   {
-    update_item<Item>(node, input, dt);
+  }
+
+  template<>
+  void Context::request_item<Rectangle>(PlatformInterface &platform, Node *node, int *ready, int *total)
+  {
   }
 
   template<>
@@ -38,10 +42,7 @@ namespace Ui
   {
     draw(spritelist, buildstate, *item_cast<Rectangle>(node));
 
-    for(auto child = node->firstchild; child; child = child->nextsibling)
-    {
-      render(spritelist, buildstate, child);
-    }
+    render_item<Item>(spritelist, buildstate, node);
   }
 
 
@@ -51,7 +52,14 @@ namespace Ui
   template<>
   void Context::update_item<Text>(Node *node, GameInput const &input, float dt)
   {
-    update_item<Item>(node, input, dt);
+  }
+
+  template<>
+  void Context::request_item<Text>(PlatformInterface &platform, Node *node, int *ready, int *total)
+  {
+    auto item = item_cast<Text>(node);
+
+    request(platform, fontcatalog, item->font, ready, total);
   }
 
   template<>
@@ -65,10 +73,7 @@ namespace Ui
   {
     draw(spritelist, buildstate, *item_cast<Text>(node));
 
-    for(auto child = node->firstchild; child; child = child->nextsibling)
-    {
-      render(spritelist, buildstate, child);
-    }
+    render_item<Item>(spritelist, buildstate, node);
   }
 
 
@@ -78,7 +83,14 @@ namespace Ui
   template<>
   void Context::update_item<Image>(Node *node, GameInput const &input, float dt)
   {
-    update_item<Item>(node, input, dt);
+  }
+
+  template<>
+  void Context::request_item<Image>(PlatformInterface &platform, Node *node, int *ready, int *total)
+  {
+    auto item = item_cast<Image>(node);
+
+    request(platform, spritecatalog, item->image, ready, total);
   }
 
   template<>
@@ -92,10 +104,7 @@ namespace Ui
   {
     draw(spritelist, buildstate, *item_cast<Image>(node));
 
-    for(auto child = node->firstchild; child; child = child->nextsibling)
-    {
-      render(spritelist, buildstate, child);
-    }
+    render_item<Item>(spritelist, buildstate, node);
   }
 
 
@@ -105,7 +114,14 @@ namespace Ui
   template<>
   void Context::update_item<Frame>(Node *node, GameInput const &input, float dt)
   {
-    update_item<Item>(node, input, dt);
+  }
+
+  template<>
+  void Context::request_item<Frame>(PlatformInterface &platform, Node *node, int *ready, int *total)
+  {
+    auto item = item_cast<Frame>(node);
+
+    request(platform, spritecatalog, item->image, ready, total);
   }
 
   template<>
@@ -119,10 +135,7 @@ namespace Ui
   {
     draw(spritelist, buildstate, *item_cast<Frame>(node));
 
-    for(auto child = node->firstchild; child; child = child->nextsibling)
-    {
-      render(spritelist, buildstate, child);
-    }
+    render_item<Item>(spritelist, buildstate, node);
   }
 
 
@@ -132,7 +145,11 @@ namespace Ui
   template<>
   void Context::update_item<Row>(Node *node, GameInput const &input, float dt)
   {
-    update_item<Item>(node, input, dt);
+  }
+
+  template<>
+  void Context::request_item<Row>(PlatformInterface &platform, Node *node, int *ready, int *total)
+  {
   }
 
   template<>
@@ -160,10 +177,7 @@ namespace Ui
   template<>
   void Context::render_item<Row>(SpriteList &spritelist, SpriteList::BuildState &buildstate, Node *node)
   {
-    for(auto child = node->firstchild; child; child = child->nextsibling)
-    {
-      render(spritelist, buildstate, child);
-    }
+    render_item<Item>(spritelist, buildstate, node);
   }
 
 
@@ -173,7 +187,11 @@ namespace Ui
   template<>
   void Context::update_item<Column>(Node *node, GameInput const &input, float dt)
   {
-    update_item<Item>(node, input, dt);
+  }
+
+  template<>
+  void Context::request_item<Column>(PlatformInterface &platform, Node *node, int *ready, int *total)
+  {
   }
 
   template<>
@@ -201,10 +219,7 @@ namespace Ui
   template<>
   void Context::render_item<Column>(SpriteList &spritelist, SpriteList::BuildState &buildstate, Node *node)
   {
-    for(auto child = node->firstchild; child; child = child->nextsibling)
-    {
-      render(spritelist, buildstate, child);
-    }
+    render_item<Item>(spritelist, buildstate, node);
   }
 
 
@@ -214,11 +229,7 @@ namespace Ui
   template<>
   void Context::update_item<ScrollBar>(Node *node, GameInput const &input, float dt)
   {
-    update_item<Item>(node, input, dt);
-
     auto item = item_cast<ScrollBar>(node);
-
-    item->hovered = (!inputaccepted && hoveritem == item) || (pressitem == item);
 
     if (!inputaccepted && hoveritem == item)
     {
@@ -267,16 +278,25 @@ namespace Ui
     item->value = clamp(item->value, 0.0f, 1 - item->size);
 
     item->pressed = (pressitem == item);
+    item->hovered = (!inputaccepted && hoveritem == item) || (pressitem == item);
+  }
+
+  template<>
+  void Context::request_item<ScrollBar>(PlatformInterface &platform, Node *node, int *ready, int *total)
+  {
+    auto item = item_cast<ScrollBar>(node);
+
+    request(platform, spritecatalog, item->handleimage, ready, total);
   }
 
   template<>
   void Context::prepare_item<ScrollBar>(Node *node)
   {
-    prepare_item<Item>(node);
-
     auto item = item_cast<ScrollBar>(node);
 
     item->value = clamp(item->value, 0.0f, 1 - item->size);
+
+    prepare_item<Item>(node);
   }
 
   template<>
@@ -289,10 +309,7 @@ namespace Ui
 
     draw(spritelist, buildstate, *item_cast<ScrollBar>(node));
 
-    for(auto child = node->firstchild; child; child = child->nextsibling)
-    {
-      render(spritelist, buildstate, child);
-    }
+    render_item<Item>(spritelist, buildstate, node);
   }
 }
 
@@ -440,6 +457,7 @@ void draw(SpriteList &spritelist, SpriteList::BuildState &buildstate, Ui::Image 
     spritelist.push_sprite(buildstate, Vec2(item.x, item.y), Rect2(Vec2(x, y), Vec2(x+width, y+height)), item.rotation, item.image, item.layer, item.tint * item.opacity);
   }
 }
+
 
 
 ///////////////////////// draw_frame ////////////////////////////////////////

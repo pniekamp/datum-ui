@@ -33,12 +33,16 @@ namespace Ui
 
       void add(leap::string_view name, Asset const *asset);
 
+      size_t count() const;
+      leap::string_view entry(size_t i) const;
+
       TypeFace const *find(leap::string_view name) const;
 
       Font find(leap::string_view name, float pixelheight) const;
       Font find(TypeFace const *typeface, float pixelheight) const;
 
-      bool request_resources(DatumPlatform::PlatformInterface &platform);
+      void request(DatumPlatform::PlatformInterface &platform, TypeFace const *typeface);
+      void request(DatumPlatform::PlatformInterface &platform, Font const &font);
 
       void sweep_resources();
 
@@ -68,4 +72,18 @@ namespace Ui
 
       mutable leap::threadlib::SpinLock m_mutex;
   };
+}
+
+// Request Utility
+inline void request(DatumPlatform::PlatformInterface &platform, Ui::FontCatalog &catalog, Ui::Font &font, int *ready, int *total)
+{
+  if (font)
+  {
+    *total += 1;
+
+    catalog.request(platform, font);
+
+    if (font->ready())
+      *ready += 1;
+  }
 }

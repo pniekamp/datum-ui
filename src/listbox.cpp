@@ -25,8 +25,6 @@ namespace Ui
   template<>
   void Context::update_item<ListBox>(Node *node, GameInput const &input, float dt)
   {
-    update_item<Control>(node, input, dt);
-
     auto item = item_cast<ListBox>(node);
 
     float lineheight = item->font ? item->font->lineheight() : 0.0f;
@@ -163,6 +161,20 @@ namespace Ui
     item->scrolly = clamp(item->scrolly, 0.0f, item->contentheight - item->height);
 
     item->focused = (focusitem == item);
+
+    update_item<Control>(node, input, dt);
+  }
+
+
+  ///////////////////////// request_item //////////////////////////////////////
+  template<>
+  void Context::request_item<ListBox>(PlatformInterface &platform, Node *node, int *ready, int *total)
+  {
+    auto item = item_cast<ListBox>(node);
+
+    request(platform, spritecatalog, item->handleimage, ready, total);
+
+    request_item<Control>(platform, node, ready, total);
   }
 
 

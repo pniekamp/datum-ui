@@ -21,11 +21,10 @@ namespace Ui
   //|---------------------- Slider --------------------------------------------
   //|--------------------------------------------------------------------------
 
+  ///////////////////////// update_item ///////////////////////////////////////
   template<>
   void Context::update_item<Slider>(Node *node, DatumPlatform::GameInput const &input, float dt)
   {   
-    update_item<Control>(node, input, dt);
-
     auto item = item_cast<Slider>(node);
 
     auto handlewidth = item->scale * ((item->handleimage) ? item->handleimage->width : 8);
@@ -86,8 +85,24 @@ namespace Ui
     item->value = item->minvalue + clamp(value, 0.0f, 1.0f) * (item->maxvalue - item->minvalue);
 
     item->pressed = (pressitem == item);
+
+    update_item<Control>(node, input, dt);
   }
 
+
+  ///////////////////////// request_item //////////////////////////////////////
+  template<>
+  void Context::request_item<Slider>(PlatformInterface &platform, Node *node, int *ready, int *total)
+  {
+    auto item = item_cast<Slider>(node);
+
+    request(platform, spritecatalog, item->handleimage, ready, total);
+
+    request_item<Control>(platform, node, ready, total);
+  }
+
+
+  ///////////////////////// prepare_item //////////////////////////////////////
   template<>
   void Context::prepare_item<Slider>(Node *node)
   {
@@ -98,6 +113,8 @@ namespace Ui
     item->value = clamp(item->value, item->minvalue, item->maxvalue);
   }
 
+
+  ///////////////////////// render_item ///////////////////////////////////////
   template<>
   void Context::render_item<Slider>(SpriteList &spritelist, SpriteList::BuildState &buildstate, Node *node)
   {

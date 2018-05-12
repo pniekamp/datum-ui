@@ -12,11 +12,12 @@
 #include "datum/memory.h"
 #include "datum/renderer.h"
 
-using SpriteSheet = Sprite;
+using SpriteAtlas = Texture;
+using SpriteImage = Sprite;
 
 namespace Ui
 {
-  using Sprite = shared_resource<SpriteSheet>;
+  using Sprite = shared_resource<SpriteImage>;
 
   //|---------------------- SpriteCatalog -------------------------------------
   //|--------------------------------------------------------------------------
@@ -35,9 +36,15 @@ namespace Ui
 
       void add(leap::string_view name, Asset const *asset);
 
-      Sprite find(leap::string_view name, lml::Rect2 region = { { 0.0f, 0.0f }, { 1.0f, 1.0f } }, lml::Vec2 align = { 0.0f, 0.0f }) const;
+      size_t count() const;
+      leap::string_view entry(size_t i) const;
 
-      bool request_resources(DatumPlatform::PlatformInterface &platform);
+      SpriteAtlas const *find(leap::string_view name) const;
+
+      Sprite find(leap::string_view name, lml::Rect2 region, lml::Vec2 align = { 0.0f, 0.0f }) const;
+
+      void request(DatumPlatform::PlatformInterface &platform, SpriteAtlas const *spriteatlas);
+      void request(DatumPlatform::PlatformInterface &platform, Sprite const &sprite);
 
       void sweep_resources();
 
@@ -56,10 +63,10 @@ namespace Ui
         size_t namelen;
         const char *name;
 
-        Texture const *spritesheet;
+        Texture const *spriteatlas;
 
         size_t instancecount;
-        SpriteSheet const *instances[256];
+        SpriteImage const *instances[256];
         std::atomic<int> *refcounts[256];
       };
 
@@ -67,4 +74,18 @@ namespace Ui
 
       mutable leap::threadlib::SpinLock m_mutex;
   };
+}
+
+// Request Utility
+inline void request(DatumPlatform::PlatformInterface &platform, Ui::SpriteCatalog &catalog, Ui::Sprite &sprite, int *ready, int *total)
+{
+  if (sprite)
+  {
+    *total += 1;
+
+    catalog.request(platform, sprite);
+
+    if (sprite->ready())
+      *ready += 1;
+  }
 }

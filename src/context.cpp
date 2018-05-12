@@ -11,6 +11,7 @@
 
 using namespace std;
 using namespace lml;
+using namespace DatumPlatform;
 
 namespace Ui
 {
@@ -19,7 +20,13 @@ namespace Ui
 
   ///////////////////////// update_item ///////////////////////////////////////
   template<>
-  void Context::update_item<Item>(Node *node, DatumPlatform::GameInput const &input, float dt)
+  void Context::update_item<Item>(Node *node, GameInput const &input, float dt)
+  {
+  }
+
+  ///////////////////////// request_item //////////////////////////////////////
+  template<>
+  void Context::request_item<Item>(PlatformInterface &platform, Node *node, int *ready, int *total)
   {
   }
 
@@ -47,6 +54,7 @@ namespace Ui
     }
   }
 
+  ///////////////////////// render_item ///////////////////////////////////////
   template<>
   void Context::render_item<Item>(SpriteList &spritelist, SpriteList::BuildState &buildstate, Node *node)
   {
@@ -81,7 +89,7 @@ namespace Ui
 
 
   ///////////////////////// Context::add_resources ////////////////////////////
-  void Context::add_resources(DatumPlatform::PlatformInterface &platform, AssetManager &assets, Asset const *catalog, leap::string_view fontpath, leap::string_view imagepath)
+  void Context::add_resources(PlatformInterface &platform, AssetManager &assets, Asset const *catalog, leap::string_view fontpath, leap::string_view imagepath)
   {    
     asset_guard lock(assets);
 
@@ -193,7 +201,7 @@ namespace Ui
 
     node->~Node();
 
-    deallocate(m_allocator, (char*)node, node->size);
+    deallocate(m_allocator, reinterpret_cast<char*>(node), node->size);
   }
 
 
@@ -209,7 +217,7 @@ namespace Ui
 
 
   ///////////////////////// Context::update ///////////////////////////////////
-  void Context::update(Node *node, DatumPlatform::GameInput const &input, float dt)
+  void Context::update(Node *node, GameInput const &input, float dt)
   {
     for(auto child = node->lastchild; child; child = child->prevsibling)
     {
@@ -223,26 +231,6 @@ namespace Ui
     }
 
     (this->*(node->update))(node, input, dt);
-  }
-
-  void Context::update(Ui::Item *item, DatumPlatform::GameInput const &input, float dt, bool *accepted)
-  {
-    assert(item);
-    assert(accepted);
-    assert(!pressitem || *accepted); // set accepted to pressitem for correct operation
-
-    ui = item;
-    mousepos = Vec2(input.mousex, input.mousey);
-    inputaccepted = *accepted;
-
-    update(node_cast<Node>(item), input, dt);
-
-    if (inputaccepted && !*accepted)
-    {
-      activeitem = item;
-
-      *accepted = true;
-    }
   }
 
 
@@ -337,8 +325,8 @@ namespace Ui
           animation.oldclip = item->clip;
           animation.oldvisible = item->visible;
 
-          item->clip |= (animation.flags & Animation::Clip);
-          item->visible |= (animation.flags & Animation::Visible);
+          item->clip |= ((animation.flags & Animation::Clip) != 0);
+          item->visible |= ((animation.flags & Animation::Visible) != 0);
 
           *animation.target = lerp(animation.startvalue, animation.finishvalue, animation.alpha);
         }
@@ -420,86 +408,171 @@ namespace Ui
     }
   }
 
-  void Context::render(SpriteList &spritelist, SpriteList::BuildState &buildstate, Ui::Item *item)
-  {
-    prepare(node_cast<Node>(item));
 
-    render(spritelist, buildstate, node_cast<Node>(item));
+  ///////////////////////// request ///////////////////////////////////////////
+  void request(PlatformInterface &platform, Ui::Context &context, Ui::Item *item, int *ready, int *total)
+  {
+    assert(item);
+
+    auto node = Context::node_cast<Context::Node>(item);
+
+    (context.*(node->request))(platform, node, ready, total);
+
+    for(auto child = node->firstchild; child; child = child->nextsibling)
+    {
+      request(platform, context, Context::item_cast<Item>(child), ready, total);
+    }
+  }
+
+
+  ///////////////////////// update ////////////////////////////////////////////
+  void update(Ui::Context &context, Ui::ItemList const &items, GameInput const &input, float dt, bool *accepted)
+  {
+    assert(accepted);
+    assert(!context.pressitem || *accepted); // set accepted to pressitem for correct operation
+
+    context.actions.clear();
+    context.mousepos = Vec2(input.mousex, input.mousey);
+    context.cursor = Ui::Context::Cursor::Arrow;
+
+    context.inputaccepted = *accepted;
+
+    if (context.popupitem)
+    {
+      context.ui = context.popupitem;
+      context.update(Context::node_cast<Context::Node>(context.popupitem), input, dt);
+
+      *accepted = context.inputaccepted;
+    }
+
+    for(auto i = items.rbegin(); i != items.rend(); ++i)
+    {
+      context.ui = *i;
+      context.update(Context::node_cast<Context::Node>(*i), input, dt);
+
+      if (context.inputaccepted && !*accepted)
+      {
+        context.activeitem = *i;
+
+        *accepted = true;
+      }
+    }
+
+    if (context.focusitem)
+    {
+      *accepted = true;
+    }
+  }
+
+
+  ///////////////////////// render ////////////////////////////////////////////
+  void render(SpriteList &spritelist, SpriteList::BuildState &buildstate, Ui::Context &context, Ui::ItemList const &items)
+  {
+    context.hoveritem = nullptr;
+
+    for(auto i = items.begin(); i != items.end(); ++i)
+    {
+      context.prepare(Context::node_cast<Context::Node>(*i));
+    }
+
+    if (context.popupitem)
+    {
+      context.prepare(Context::node_cast<Context::Node>(context.popupitem));
+    }
+
+    for(auto i = items.begin(); i != items.end(); ++i)
+    {
+      context.render(spritelist, buildstate, Context::node_cast<Context::Node>(*i));
+    }
+
+    if (context.popupitem)
+    {
+      context.render(spritelist, buildstate, Context::node_cast<Context::Node>(context.popupitem));
+    }
+  }
+}
+
+
+///////////////////////// open //////////////////////////////////////////////
+void open(Ui::Context &ui, Ui::Item *item, Ui::ItemList &items)
+{
+  raise(ui, item, items);
+}
+
+
+///////////////////////// show //////////////////////////////////////////////
+void show(Ui::Context &ui, Ui::Item *item, bool show)
+{
+  item->visible = show;
+
+  if (!item->visible && item == ui.activeitem)
+  {
+    ui.pressitem = nullptr;
+    ui.focusitem = nullptr;
+    ui.activeitem = nullptr;
   }
 }
 
 
 ///////////////////////// raise /////////////////////////////////////////////
-void raise(UiItem *item, UiItemList &items, int below)
+void raise(Ui::Context &ui, Ui::Item *item, Ui::ItemList &items)
 {
-  for(auto i = items.begin(); i != items.end(); ++i)
+  auto jp = find(items.begin(), items.end(), item);
+  if (jp != items.end())
+    items.erase(jp);
+
+  auto ip = items.begin();
+  while (ip != items.end() && (*ip)->z <= item->z)
+    ++ip;
+
+  items.insert(ip, item);
+}
+
+
+///////////////////////// close /////////////////////////////////////////////
+void close(Ui::Context &ui, Ui::Item *item, Ui::ItemList &items)
+{
+  if (item == ui.activeitem)
   {
-    if (*i == item)
-    {
-      items.erase(i);
-      break;
-    }
+    ui.pressitem = nullptr;
+    ui.focusitem = nullptr;
+    ui.activeitem = nullptr;
   }
 
-  items.insert(items.end() + below, item);
+  auto jp = find(items.begin(), items.end(), item);
+  if (jp != items.end())
+    items.erase(jp);
 }
 
 
 ///////////////////////// update_ui_overlay /////////////////////////////////
-void update_ui_overlay(UiContext &ui, UiItemList const &items, DatumPlatform::GameInput const &input, float dt, bool *accepted)
+void update_ui_overlay(Ui::Context &ui, Ui::ItemList const &items, GameInput const &input, float dt, bool *accepted)
 {
   BEGIN_TIMED_BLOCK(UiUpdate, Color3(0.0f, 0.6f, 0.8f))
 
-  ui.actions.clear();
-
-  if (ui.popupitem)
-  {
-    ui.update(ui.popupitem, input, dt, accepted);
-  }
-
-  for(auto i = items.rbegin(); i != items.rend(); ++i)
-  {
-    ui.update(*i, input, dt, accepted);
-  }
-
-  if (ui.focusitem)
-  {
-    *accepted = true;
-  }
+  update(ui, items, input, dt, accepted);
 
   END_TIMED_BLOCK(UiUpdate)
 }
 
 
 ///////////////////////// render_ui_overlay /////////////////////////////////
-void render_ui_overlay(RenderContext &context, ResourceManager &resources, PushBuffer &pushbuffer, DatumPlatform::Viewport const &viewport, UiContext &ui, UiItemList const &items)
+void render_ui_overlay(RenderContext &context, ResourceManager &resources, PushBuffer &pushbuffer, Viewport const &viewport, Ui::Context &ui, Ui::ItemList const &items)
 {
   BEGIN_TIMED_BLOCK(UiOverlay, Color3(0.5f, 0.7f, 0.8f))
 
-  SpriteList overlay;
+  SpriteList spritelist;
   SpriteList::BuildState buildstate;
 
-  if (overlay.begin(buildstate, context, resources))
+  if (spritelist.begin(buildstate, context, resources))
   {
-    overlay.viewport(buildstate, viewport);
+    render(spritelist, buildstate, ui, items);
 
-    ui.hoveritem = nullptr;
-
-    for(auto i = items.begin(); i != items.end(); ++i)
-    {
-      ui.render(overlay, buildstate, *i);
-    }
-
-    if (ui.popupitem)
-    {
-      ui.render(overlay, buildstate, ui.popupitem);
-    }
-
-    overlay.finalise(buildstate);
+    spritelist.finalise(buildstate);
 
     if (auto entry = pushbuffer.push<Renderable::Sprites>())
     {
-      entry->spritecommands = overlay.spritecommands;
+      entry->spritecommands = spritelist.spritecommands;
     }
   }
 

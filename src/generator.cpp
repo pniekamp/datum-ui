@@ -492,6 +492,7 @@ void codegen_ui(string const &filename, string const &name, uint8_t const *bytec
   fout << "#pragma once" << '\n';
   fout << "#pragma GCC diagnostic push" << '\n';
   fout << "#pragma GCC diagnostic ignored \"-Wunused-variable\"" << '\n';
+  fout << "#pragma GCC diagnostic ignored \"-Wunused-function\"" << '\n';
   fout << '\n';
   fout << "#include \"datum/ui.h\"" << '\n';
   fout << '\n';

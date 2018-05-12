@@ -108,12 +108,17 @@ void datumuitest_update(DatumPlatform::PlatformInterface &platform, DatumPlatfor
   {
     asset_guard lock(state.assets);
 
-    state.resources.request(platform, state.debugfont);
+    int ready = 0, total = 0;
 
-    auto fontsready = state.uicontext.fontcatalog.request_resources(platform);
-    auto spritesready = state.uicontext.spritecatalog.request_resources(platform);
+    request(platform, state.resources, state.debugfont, &ready, &total);
+    request(platform, state.rendercontext, &ready, &total);
 
-    if (state.rendercontext.ready && state.debugfont->ready() && fontsready && spritesready)
+    for(auto &panel : state.panels)
+    {
+      request(platform, state.uicontext, panel, &ready, &total);
+    }
+
+    if (ready == total)
     {
       state.mode = GameState::Play;
     }
@@ -172,11 +177,11 @@ void datumuitest_render(DatumPlatform::PlatformInterface &platform, DatumPlatfor
       {
         if (state.uicontext.activeitem != state.panels.back())
         {
-          raise(state.uicontext.activeitem, state.panels);
+          raise(state.uicontext, state.uicontext.activeitem, state.panels);
         }
       }
 
-      if (action.id == 5)
+      if (action.id == 5 && action.op == Ui::DragButton::Dragged)
       {
         auto handle = static_cast<Ui::DragButton*>(action.item);
 
@@ -184,7 +189,7 @@ void datumuitest_render(DatumPlatform::PlatformInterface &platform, DatumPlatfor
         action.ui->y = clamp(action.ui->y + handle->dy, 0.0f, viewport.height - action.ui->height);
       }
 
-      if (action.id == 6)
+      if (action.id == 6 && action.op == Ui::DragButton::Dragged)
       {
         auto handle = static_cast<Ui::DragButton*>(action.item);
 

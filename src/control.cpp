@@ -28,6 +28,16 @@ namespace Ui
     item->hovered = (!inputaccepted && hoveritem == item) || (pressitem == item);
   }
 
+  ///////////////////////// request_item //////////////////////////////////////
+  template<>
+  void Context::request_item<Control>(PlatformInterface &platform, Node *node, int *ready, int *total)
+  {
+    auto item = item_cast<Control>(node);
+
+    request(platform, fontcatalog, item->font, ready, total);
+    request(platform, spritecatalog, item->backgroundimage, ready, total);
+  }
+
   ///////////////////////// prepare_item //////////////////////////////////////
   template<>
   void Context::prepare_item<Control>(Node *node)
@@ -43,5 +53,4 @@ namespace Ui
       item->font = fontcatalog.find(item->font->typeface, item->fontheight);
     }
   }
-
 }

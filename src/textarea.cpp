@@ -280,8 +280,6 @@ namespace Ui
   template<>
   void Context::update_item<TextArea>(Node *node, GameInput const &input, float dt)
   {
-    update_item<Item>(node, input, dt);
-
     auto item = item_cast<TextArea>(node);
 
     if (!inputaccepted && hoveritem == item)
@@ -402,6 +400,16 @@ namespace Ui
 
     if (focusitem != item)
       item->selectionbeg = item->selectionend = item->cursor = -1;
+  }
+
+
+  ///////////////////////// request_item //////////////////////////////////////
+  template<>
+  void Context::request_item<TextArea>(PlatformInterface &platform, Node *node, int *ready, int *total)
+  {
+    auto item = item_cast<TextArea>(node);
+
+    request(platform, fontcatalog, item->font, ready, total);
   }
 
 

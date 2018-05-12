@@ -50,6 +50,8 @@ namespace Ui
     bool contains(lml::Vec2 const &worldpos) const { return leap::lml::contains(lml::Rect2(lml::Vec2(0.0f), dim()), unmap(worldpos)); }
   };
 
+  using ItemList = std::vector<Item*, StackAllocator<Item*>>;
+
 
   //|---------------------- Binding -------------------------------------------
   //|--------------------------------------------------------------------------
@@ -212,10 +214,6 @@ namespace Ui
       template<typename T>
       Animation *animate(Ui::Item *item, T &variable, Expression const &enabled = stack_expression<5>{true}, long flags = 0, float duration = 0.250f);
 
-      void update(Ui::Item *item, DatumPlatform::GameInput const &input, float dt, bool *accepted);
-
-      void render(SpriteList &spritelist, SpriteList::BuildState &buildstate, Ui::Item *item);
-
       void destroy(Ui::Item *item);
 
     public:
@@ -238,9 +236,17 @@ namespace Ui
       Ui::Item *popupitem;
       Ui::Item *popupowner;
 
+      enum class Cursor
+      {
+        Arrow,
+        Edit,
+      };
+
+      Cursor cursor;
+
     public:
 
-      const char *add_string(Ui::Item * item, leap::string_view str);
+      const char *add_string(Ui::Item *item, leap::string_view str);
 
     private:
 
@@ -280,6 +286,7 @@ namespace Ui
         Animations animations;
 
         void (Context::*update)(Node*, DatumPlatform::GameInput const &, float);
+        void (Context::*request)(DatumPlatform::PlatformInterface &, Node *node, int*, int*);
         void (Context::*prepare)(Node*);
         void (Context::*render)(SpriteList&, SpriteList::BuildState&, Node*);
 
@@ -296,13 +303,13 @@ namespace Ui
       };
 
       template<typename Item>
-      Item *item_cast(Node *node)
+      static Item *item_cast(Node *node)
       {
         return reinterpret_cast<Item*>((char*)node + leap::alignto(sizeof(Node), alignof(std::max_align_t)));
       }
 
       template<typename Node>
-      Node *node_cast(Item *item)
+      static Node *node_cast(Item *item)
       {
         return reinterpret_cast<Node*>((char*)item - leap::alignto(sizeof(Node), alignof(std::max_align_t)));
       }
@@ -314,6 +321,9 @@ namespace Ui
       void update_item(Node *node, DatumPlatform::GameInput const &input, float dt);
 
       template<typename Item>
+      void request_item(DatumPlatform::PlatformInterface &platform, Node *node, int *ready, int *total);
+
+      template<typename Item>
       void prepare_item(Node *node);
 
       template<typename Item>
@@ -322,6 +332,11 @@ namespace Ui
       void update(Node *node, DatumPlatform::GameInput const &input, float dt);
       void prepare(Node *node);
       void render(SpriteList &spritelist, SpriteList::BuildState &buildstate, Node *node);
+
+      friend void request(DatumPlatform::PlatformInterface &platform, Ui::Context &ui, Ui::Item *item, int *ready, int *total);
+
+      friend void update(Ui::Context &ui, Ui::ItemList const &items, DatumPlatform::GameInput const &input, float dt, bool *accepted);
+      friend void render(SpriteList &spritelist, SpriteList::BuildState &buildstate, Ui::Context &ui, Ui::ItemList const &items);
   };
 
   template<typename Item>
@@ -337,6 +352,7 @@ namespace Ui
     }
 
     node->update = &Ui::Context::update_item<Item>;
+    node->request = &Ui::Context::request_item<Item>;
     node->prepare = &Ui::Context::prepare_item<Item>;
     node->render = &Ui::Context::render_item<Item>;
 
@@ -386,24 +402,23 @@ namespace Ui
 
     return &node->animations.back();
   }
+
+  // Functions
+
+  void request(DatumPlatform::PlatformInterface &platform, Ui::Context &ui, Ui::Item *item, int *ready, int *total);
+
+  void update(Ui::Context &ui, Ui::ItemList const &items, DatumPlatform::GameInput const &input, float dt, bool *accepted);
+  void render(SpriteList &spritelist, SpriteList::BuildState &buildstate, Ui::Context &ui, Ui::ItemList const &items);
 }
 
 using UiItem = Ui::Item;
-using UiItemList = std::vector<UiItem*, StackAllocator<UiItem*>>;
+using UiItemList = Ui::ItemList;
 using UiContext = Ui::Context;
 
-void raise(UiItem *item, UiItemList &items, int below = 0);
+void open(Ui::Context &ui, Ui::Item *item, Ui::ItemList &items);
+void show(Ui::Context &ui, Ui::Item *item, bool show);
+void raise(Ui::Context &ui, Ui::Item *item, Ui::ItemList &items);
+void close(Ui::Context &ui, Ui::Item *item, Ui::ItemList &items);
 
-void update_ui_overlay(UiContext &ui, UiItemList const &items, DatumPlatform::GameInput const &input, float dt, bool *accepted);
-void render_ui_overlay(RenderContext &context, ResourceManager &resources, PushBuffer &pushbuffer, DatumPlatform::Viewport const &viewport, UiContext &ui, UiItemList const &items);
-
-// Request Utility
-inline void request(DatumPlatform::PlatformInterface &platform, UiContext &ui, int *ready, int *total)
-{
-  *total += 1;
-
-  if (ui.fontcatalog.request_resources(platform) && ui.spritecatalog.request_resources(platform))
-  {
-    *ready += 1;
-  }
-}
+void update_ui_overlay(Ui::Context &ui, Ui::ItemList const &items, DatumPlatform::GameInput const &input, float dt, bool *accepted);
+void render_ui_overlay(RenderContext &context, ResourceManager &resources, PushBuffer &pushbuffer, DatumPlatform::Viewport const &viewport, Ui::Context &ui, Ui::ItemList const &items);
