@@ -181,7 +181,7 @@ Window
     height: (parent.height/parent.scale - 28) / scale
     contentwidth: 350
     contentheight: 450
-    //clip: true
+    clip: true
 
     Column
     {
@@ -274,6 +274,16 @@ Window
         fontheight: 17
         bordercolor: focused ? #04F : #888
         text: "Hello World"
+      }     
+
+      SlideEdit
+      {
+        width: 180
+        height: 24
+        font: "Roboto-Bold"
+        fontheight: 17
+        bordercolor: focused ? #04F : #888
+        value: 1.234567
       }
       
       ListBox

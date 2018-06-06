@@ -10,6 +10,7 @@
 #include "../../src/scrollarea.h"
 #include "../../src/textarea.h"
 #include "../../src/lineedit.h"
+#include "../../src/slideedit.h"
 #include "../../src/listbox.h"
 #include "../../src/combobox.h"
 #include "../../src/groupbox.h"

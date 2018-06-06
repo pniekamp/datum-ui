@@ -27,6 +27,8 @@ namespace Ui
   template<>
   void Context::update_item<LineEdit>(Node *node, GameInput const &input, float dt)
   {
+    update_item<Control>(node, input, dt);
+
     auto item = item_cast<LineEdit>(node);
 
     auto xbasis = rotate(Vec2(1, 0), item->rotation);
@@ -56,7 +58,8 @@ namespace Ui
         actions.push_back(Action{ item->action, LineEdit::Focused, ui, item });
 
         focusitem = item;
-        pressitem = item;
+        pressitem = item;        
+        inputaccepted = true;
       }
 
       cursor = Cursor::Edit;
@@ -300,16 +303,12 @@ namespace Ui
       }
 
       cursor = Cursor::Edit;
-
-      inputaccepted = true;
     }
 
     if (focusitem != item)
       item->selectionbeg = item->selectionend = -1;
 
     item->focused = (focusitem == item);
-
-    update_item<Control>(node, input, dt);
   }
 
 
@@ -398,7 +397,7 @@ void draw(SpriteList &spritelist, SpriteList::BuildState &buildstate, Ui::LineEd
   text.selectiontextcolor = item.selectiontextcolor;
 
   auto cliprect = buildstate.cliprect();
-  auto arearect = Rect2(Vec2(item.x + padding, item.y + padding), Vec2(item.x + item.width - padding, item.y + item.height - padding));
+  auto arearect = Rect2(Vec2(item.x + padding - 1, item.y + padding), Vec2(item.x + item.width - padding + 1, item.y + item.height - padding));
 
   if (auto newclip = intersection(cliprect, arearect))
   {

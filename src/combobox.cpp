@@ -37,7 +37,7 @@ namespace Ui
 
     if (hoveritem == item)
     {
-      if (mousepos.x < item->x + item->width - item->scale * item->handlesize)
+      if (mousepos.x < item->x + item->width - item->scale * item->handlesize || item->contentheight <= item->height)
       {
         float lineheight = item->font ? item->font->lineheight() : 0.0f;
 
@@ -56,13 +56,16 @@ namespace Ui
         focusitem = nullptr;
       }
 
-      if (actions.size() != 0 && actions.back().item == item && actions.back().op == ListBox::Selected)
+      for(auto &action : actions)
       {
-        item->combobox->selection = item->selection;
+        if (action.item == item && action.op == ListBox::Selected)
+        {
+          item->combobox->selection = item->selection;
 
-        actions.push_back(Action{ item->combobox->action, ComboBox::Changed, ui, item->combobox });
+          actions.push_back(Action{ item->combobox->action, ComboBox::Changed, ui, item->combobox });
 
-        focusitem = nullptr;
+          focusitem = nullptr;
+        }
       }
 
       inputaccepted = true;
@@ -127,6 +130,8 @@ namespace Ui
   template<>
   void Context::update_item<ComboBox>(Node *node, GameInput const &input, float dt)
   {
+    update_item<Control>(node, input, dt);
+
     auto item = item_cast<ComboBox>(node);
 
     if (!inputaccepted && hoveritem == item)
@@ -145,6 +150,7 @@ namespace Ui
         actions.push_back(Action{ item->action, ComboBox::Pressed, ui, item });
 
         pressitem = item;
+        inputaccepted = true;
       }
 
       if (input.deltamousez != 0)
@@ -218,14 +224,10 @@ namespace Ui
 
         pressitem = nullptr;
       }
-
-      inputaccepted = true;
     }
 
     item->pressed = (pressitem == item) && (hoveritem == item || dragging);
     item->dropped = (popupowner == item);
-
-    update_item<Control>(node, input, dt);
   }
 
 

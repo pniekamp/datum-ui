@@ -25,6 +25,8 @@ namespace Ui
   template<>
   void Context::update_item<Button>(Node *node, DatumPlatform::GameInput const &input, float dt)
   {
+    update_item<Control>(node, input, dt);
+
     auto item = item_cast<Button>(node);
 
     if (!inputaccepted && hoveritem == item)
@@ -37,6 +39,7 @@ namespace Ui
         actions.push_back(Action{ item->action, Button::Pressed, ui, item });
 
         pressitem = item;
+        inputaccepted = true;
       }
     }
 
@@ -44,7 +47,7 @@ namespace Ui
     {
       elapsed += dt;
 
-      if (hoveritem != item)
+      if (hoveritem != item || elapsed > DoubleClickTime)
         focusitem = nullptr;
     }
 
@@ -58,7 +61,7 @@ namespace Ui
         {
           actions.push_back(Action{ item->action, Button::Clicked, ui, item });
 
-          if (focusitem == item && elapsed < DoubleClickTime)
+          if (focusitem == item)
           {
             actions.push_back(Action{ item->action, Button::DoubleClicked, ui, item });
           }
@@ -69,13 +72,9 @@ namespace Ui
 
         pressitem = nullptr;
       }
-
-      inputaccepted = true;
     }
 
     item->pressed = (pressitem == item) && (hoveritem == item || dragging);
-
-    update_item<Control>(node, input, dt);
   }
 
   template<>
@@ -116,15 +115,7 @@ namespace Ui
   {
     auto item = item_cast<CheckButton>(node);
 
-    if (!inputaccepted && hoveritem == item)
-    {
-      if (input.mousebuttons[GameInput::Left].pressed())
-      {
-        pressitem = item;
-      }
-    }
-
-    if (pressitem == item)
+    if (pressitem == item || (!inputaccepted && hoveritem == item && input.mousebuttons[GameInput::Left].pressed()))
     {
       if (!input.mousebuttons[GameInput::Left].down())
       {

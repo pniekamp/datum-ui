@@ -25,6 +25,8 @@ namespace Ui
   template<>
   void Context::update_item<Slider>(Node *node, DatumPlatform::GameInput const &input, float dt)
   {   
+    update_item<Control>(node, input, dt);
+
     auto item = item_cast<Slider>(node);
 
     auto handlewidth = item->scale * ((item->handleimage) ? item->handleimage->width : 8);
@@ -47,6 +49,7 @@ namespace Ui
         actions.push_back(Action{ item->action, Slider::Pressed, ui, item });
 
         pressitem = item;
+        inputaccepted = true;
       }
 
       if (input.deltamousez != 0)
@@ -78,15 +81,11 @@ namespace Ui
 
         pressitem = nullptr;
       }
-
-      inputaccepted = true;
     }
 
     item->value = item->minvalue + clamp(value, 0.0f, 1.0f) * (item->maxvalue - item->minvalue);
 
     item->pressed = (pressitem == item);
-
-    update_item<Control>(node, input, dt);
   }
 
 

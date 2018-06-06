@@ -25,6 +25,8 @@ namespace Ui
   template<>
   void Context::update_item<ListBox>(Node *node, GameInput const &input, float dt)
   {
+    update_item<Control>(node, input, dt);
+
     auto item = item_cast<ListBox>(node);
 
     float lineheight = item->font ? item->font->lineheight() : 0.0f;
@@ -40,6 +42,7 @@ namespace Ui
 
         focusitem = item;
         pressitem = item;
+        inputaccepted = true;
       }
 
       if (input.deltamousez != 0)
@@ -140,6 +143,11 @@ namespace Ui
           }
         }
 
+        if (!input.mousebuttons[GameInput::Left].down())
+        {
+          actions.push_back(Action{ item->action, ListBox::Selected, ui, item });
+        }
+
         handled = true;
       }
 
@@ -147,22 +155,13 @@ namespace Ui
       {
         actions.push_back(Action{ item->action, ListBox::Released, ui, item });
 
-        if (presspos.x > 0 && presspos.x < item->width - item->scale * item->handlesize && presspos.y > 0 && presspos.y < item->height)
-        {
-          actions.push_back(Action{ item->action, ListBox::Selected, ui, item });
-        }
-
         pressitem = nullptr;
       }
-
-      inputaccepted = true;
     }
 
     item->scrolly = clamp(item->scrolly, 0.0f, item->contentheight - item->height);
 
     item->focused = (focusitem == item);
-
-    update_item<Control>(node, input, dt);
   }
 
 

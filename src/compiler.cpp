@@ -8,8 +8,8 @@
 
 #include "parser.h"
 #include "generator.h"
-#include "leap.h"
-#include "leap\pathstring.h"
+#include <leap.h>
+#include <leap/pathstring.h>
 #include <iostream>
 
 using namespace std;

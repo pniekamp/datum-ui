@@ -383,6 +383,7 @@ int main()
   items.push_back({ "DragButton", "Button", { { "dx", "Float" }, { "dy", "Float" } } });
   items.push_back({ "Slider", "Control", { { "value", "Float" }, { "minvalue", "Float" }, { "maxvalue", "Float" }, { "orientation", "Int" }, { "inset", "Float" }, { "handleimage", "Sprite" }, { "handletint", "Color" }, { "handlelayer", "Float" }, { "pressed", "Bool" } }, { "Horizontal", "Vertical" } });
   items.push_back({ "LineEdit", "Control", { { "text", "Text" }, { "textcolor", "Color" }, { "padding", "Float" }, { "selectioncolor", "Color" }, { "selectiontextcolor", "Color" }, { "focused", "Bool" }, { "filter", "Int"} }, { "Readonly", "Integer", "Decimal", "Text" } });
+  items.push_back({ "SlideEdit", "LineEdit", { { "value", "Float" }, { "precision", "Int" }, { "format", "Text" }, { "minvalue", "Float" }, { "maxvalue", "Float" }, { "handleimage", "Sprite" }, { "handleimagetint", "Color" }, { "handleimagelayer", "Float" }, { "sliderate", "Float" } } });
   items.push_back({ "ListBox", "Control", { { "text", "Text" }, { "textcolor", "Color" }, { "handleimage", "Sprite" }, { "handletint", "Color" }, { "handlelayer", "Float" }, { "handleslice", "Float" }, { "handlesize", "Float" }, { "handleinset", "Float" }, { "padding", "Float" }, { "selectioncolor", "Color" }, { "selectiontextcolor", "Color" }, { "focused", "Bool" } } });
   items.push_back({ "ComboBox", "Control", { { "text", "Text" }, { "textcolor", "Color" }, { "dropimage", "Sprite" }, { "dropimagetint", "Color" }, { "dropimagelayer", "Float" }, { "listborderwidth", "Int" }, { "listbordercolor", "Color" }, { "listbackgroundcolor", "Color" }, { "handleimage", "Sprite" }, { "handletint", "Color" }, { "handlelayer", "Float" }, { "handleslice", "Float" }, { "handlesize", "Float" }, { "handleinset", "Float" }, { "padding", "Float" }, { "selectioncolor", "Color" }, { "selectiontextcolor", "Color" }, { "pressed", "Bool" }, { "dropped", "Bool" } } });
   items.push_back({ "GroupBox", "CheckButton", { }, { "Left", "Center", "Right", "Before", "Fill", "After", "Above", "Below", "UnChecked", "Indeterminate", "Checked" } });
@@ -403,6 +404,7 @@ int main()
   cout << "#include \"button.h\"" << '\n';
   cout << "#include \"slider.h\"" << '\n';
   cout << "#include \"lineedit.h\"" << '\n';
+  cout << "#include \"slideedit.h\"" << '\n';
   cout << "#include \"listbox.h\"" << '\n';
   cout << "#include \"combobox.h\"" << '\n';
   cout << "#include \"groupbox.h\"" << '\n';

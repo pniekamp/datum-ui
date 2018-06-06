@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "leap/util.h"
+#include <leap.h>
 #include <vector>
 #include <cstdint>
 #include <cassert>

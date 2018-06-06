@@ -244,6 +244,7 @@ namespace Ui
           presspos.y = 0.5f * item->size * item->height;
 
         pressitem = item;
+        inputaccepted = true;
       }
 
       if (input.deltamousez != 0)
@@ -271,8 +272,6 @@ namespace Ui
       {
         pressitem = nullptr;
       }
-
-      inputaccepted = true;
     }
 
     item->value = clamp(item->value, 0.0f, 1 - item->size);

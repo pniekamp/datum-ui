@@ -11,6 +11,7 @@
 #include "button.h"
 #include "slider.h"
 #include "lineedit.h"
+#include "slideedit.h"
 #include "listbox.h"
 #include "combobox.h"
 #include "groupbox.h"
@@ -257,86 +258,101 @@ namespace Ui
     LineEdit_focused = 0x6c64,
     LineEdit_filter = 0x6c2d,
 
-    ListBox = 0x5e00,
-    ListBox_text = 0x5ea8,
-    ListBox_textcolor = 0x5e17,
-    ListBox_textcolor_r = 0x5eb7,
-    ListBox_textcolor_g = 0x5e2,
-    ListBox_textcolor_b = 0x5eaf,
-    ListBox_textcolor_a = 0x5ee2,
-    ListBox_handleimage = 0x5e11,
-    ListBox_handletint = 0x5e43,
-    ListBox_handletint_r = 0x5ef9,
-    ListBox_handletint_g = 0x5ea6,
-    ListBox_handletint_b = 0x5e29,
-    ListBox_handletint_a = 0x5eec,
-    ListBox_handlelayer = 0x5e70,
-    ListBox_handleslice = 0x5e4d,
-    ListBox_handlesize = 0x5ebc,
-    ListBox_handleinset = 0x5e79,
-    ListBox_padding = 0x5ea9,
-    ListBox_selectioncolor = 0x5e19,
-    ListBox_selectioncolor_r = 0x5e8a,
-    ListBox_selectioncolor_g = 0x5e51,
-    ListBox_selectioncolor_b = 0x5ec6,
-    ListBox_selectioncolor_a = 0x5e65,
-    ListBox_selectiontextcolor = 0x5e54,
-    ListBox_selectiontextcolor_r = 0x5e12,
-    ListBox_selectiontextcolor_g = 0x5e6c,
-    ListBox_selectiontextcolor_b = 0x5e23,
-    ListBox_selectiontextcolor_a = 0x5e72,
-    ListBox_focused = 0x5e18,
+    SlideEdit = 0x5e00,
+    SlideEdit_value = 0x5ea8,
+    SlideEdit_precision = 0x5e17,
+    SlideEdit_format = 0x5eb7,
+    SlideEdit_minvalue = 0x5e2,
+    SlideEdit_maxvalue = 0x5eaf,
+    SlideEdit_handleimage = 0x5ee2,
+    SlideEdit_handleimagetint = 0x5e11,
+    SlideEdit_handleimagetint_r = 0x5e43,
+    SlideEdit_handleimagetint_g = 0x5ef9,
+    SlideEdit_handleimagetint_b = 0x5ea6,
+    SlideEdit_handleimagetint_a = 0x5e29,
+    SlideEdit_handleimagelayer = 0x5eec,
+    SlideEdit_sliderate = 0x5e70,
 
-    ComboBox = 0x1100,
-    ComboBox_text = 0x1136,
-    ComboBox_textcolor = 0x1173,
-    ComboBox_textcolor_r = 0x1154,
-    ComboBox_textcolor_g = 0x11df,
-    ComboBox_textcolor_b = 0x115c,
-    ComboBox_textcolor_a = 0x115b,
-    ComboBox_dropimage = 0x11d2,
-    ComboBox_dropimagetint = 0x1137,
-    ComboBox_dropimagetint_r = 0x11db,
-    ComboBox_dropimagetint_g = 0x1165,
-    ComboBox_dropimagetint_b = 0x1161,
-    ComboBox_dropimagetint_a = 0x11e2,
-    ComboBox_dropimagelayer = 0x1119,
-    ComboBox_listborderwidth = 0x11e0,
-    ComboBox_listbordercolor = 0x11d3,
-    ComboBox_listbordercolor_r = 0x117a,
-    ComboBox_listbordercolor_g = 0x11ca,
-    ComboBox_listbordercolor_b = 0x111d,
-    ComboBox_listbordercolor_a = 0x1199,
-    ComboBox_listbackgroundcolor = 0x11aa,
-    ComboBox_listbackgroundcolor_r = 0x118d,
-    ComboBox_listbackgroundcolor_g = 0x11b2,
-    ComboBox_listbackgroundcolor_b = 0x1176,
-    ComboBox_listbackgroundcolor_a = 0x1170,
-    ComboBox_handleimage = 0x11c5,
-    ComboBox_handletint = 0x11f7,
-    ComboBox_handletint_r = 0x1115,
-    ComboBox_handletint_g = 0x1116,
-    ComboBox_handletint_b = 0x1124,
-    ComboBox_handletint_a = 0x119a,
-    ComboBox_handlelayer = 0x11cb,
-    ComboBox_handleslice = 0x11f9,
-    ComboBox_handlesize = 0x117f,
-    ComboBox_handleinset = 0x1132,
-    ComboBox_padding = 0x112b,
-    ComboBox_selectioncolor = 0x114,
-    ComboBox_selectioncolor_r = 0x119d,
-    ComboBox_selectioncolor_g = 0x1190,
-    ComboBox_selectioncolor_b = 0x11b3,
-    ComboBox_selectioncolor_a = 0x1172,
-    ComboBox_selectiontextcolor = 0x1142,
-    ComboBox_selectiontextcolor_r = 0x1191,
-    ComboBox_selectiontextcolor_g = 0x11b7,
-    ComboBox_selectiontextcolor_b = 0x116d,
-    ComboBox_selectiontextcolor_a = 0x114a,
-    ComboBox_pressed = 0x114f,
-    ComboBox_dropped = 0x11b4,
+    ListBox = 0x1100,
+    ListBox_text = 0x1136,
+    ListBox_textcolor = 0x1173,
+    ListBox_textcolor_r = 0x1154,
+    ListBox_textcolor_g = 0x11df,
+    ListBox_textcolor_b = 0x115c,
+    ListBox_textcolor_a = 0x115b,
+    ListBox_handleimage = 0x11d2,
+    ListBox_handletint = 0x1137,
+    ListBox_handletint_r = 0x11db,
+    ListBox_handletint_g = 0x1165,
+    ListBox_handletint_b = 0x1161,
+    ListBox_handletint_a = 0x11e2,
+    ListBox_handlelayer = 0x1119,
+    ListBox_handleslice = 0x11e0,
+    ListBox_handlesize = 0x11d3,
+    ListBox_handleinset = 0x117a,
+    ListBox_padding = 0x11ca,
+    ListBox_selectioncolor = 0x111d,
+    ListBox_selectioncolor_r = 0x1199,
+    ListBox_selectioncolor_g = 0x11aa,
+    ListBox_selectioncolor_b = 0x118d,
+    ListBox_selectioncolor_a = 0x11b2,
+    ListBox_selectiontextcolor = 0x1176,
+    ListBox_selectiontextcolor_r = 0x1170,
+    ListBox_selectiontextcolor_g = 0x11c5,
+    ListBox_selectiontextcolor_b = 0x11f7,
+    ListBox_selectiontextcolor_a = 0x1115,
+    ListBox_focused = 0x1116,
 
-    GroupBox = 0xaf00,
+    ComboBox = 0xaf00,
+    ComboBox_text = 0xafa6,
+    ComboBox_textcolor = 0xaf8e,
+    ComboBox_textcolor_r = 0xafe8,
+    ComboBox_textcolor_g = 0xaf18,
+    ComboBox_textcolor_b = 0xaf6a,
+    ComboBox_textcolor_a = 0xafc8,
+    ComboBox_dropimage = 0xafe3,
+    ComboBox_dropimagetint = 0xaf44,
+    ComboBox_dropimagetint_r = 0xafff,
+    ComboBox_dropimagetint_g = 0xafe6,
+    ComboBox_dropimagetint_b = 0xaff9,
+    ComboBox_dropimagetint_a = 0xaffa,
+    ComboBox_dropimagelayer = 0xafd5,
+    ComboBox_listborderwidth = 0xaf94,
+    ComboBox_listbordercolor = 0xafae,
+    ComboBox_listbordercolor_r = 0xafdd,
+    ComboBox_listbordercolor_g = 0xafe1,
+    ComboBox_listbordercolor_b = 0xaf24,
+    ComboBox_listbordercolor_a = 0xaf20,
+    ComboBox_listbackgroundcolor = 0xaf56,
+    ComboBox_listbackgroundcolor_r = 0xafc9,
+    ComboBox_listbackgroundcolor_g = 0xaf31,
+    ComboBox_listbackgroundcolor_b = 0xaf41,
+    ComboBox_listbackgroundcolor_a = 0xaf42,
+    ComboBox_handleimage = 0xaf32,
+    ComboBox_handletint = 0xaf49,
+    ComboBox_handletint_r = 0xaf33,
+    ComboBox_handletint_g = 0xaf7b,
+    ComboBox_handletint_b = 0xafb2,
+    ComboBox_handletint_a = 0xafe,
+    ComboBox_handlelayer = 0xafa1,
+    ComboBox_handleslice = 0xafc5,
+    ComboBox_handlesize = 0xaf92,
+    ComboBox_handleinset = 0xaf1e,
+    ComboBox_padding = 0xafa5,
+    ComboBox_selectioncolor = 0xafbf,
+    ComboBox_selectioncolor_r = 0xafc4,
+    ComboBox_selectioncolor_g = 0xaf93,
+    ComboBox_selectioncolor_b = 0xafb7,
+    ComboBox_selectioncolor_a = 0xaf99,
+    ComboBox_selectiontextcolor = 0xafb5,
+    ComboBox_selectiontextcolor_r = 0xafd6,
+    ComboBox_selectiontextcolor_g = 0xafce,
+    ComboBox_selectiontextcolor_b = 0xaf8a,
+    ComboBox_selectiontextcolor_a = 0xaf77,
+    ComboBox_pressed = 0xaf35,
+    ComboBox_dropped = 0xaf19,
+
+    GroupBox = 0x2f00,
 
   };
 
@@ -396,6 +412,7 @@ namespace Ui
         case Id::CheckButton_checked:
         case Id::Slider_orientation:
         case Id::LineEdit_filter:
+        case Id::SlideEdit_precision:
         case Id::ComboBox_listborderwidth:
           return Type::Int;
 
@@ -545,6 +562,15 @@ namespace Ui
         case Id::LineEdit_selectiontextcolor_g:
         case Id::LineEdit_selectiontextcolor_b:
         case Id::LineEdit_selectiontextcolor_a:
+        case Id::SlideEdit_value:
+        case Id::SlideEdit_minvalue:
+        case Id::SlideEdit_maxvalue:
+        case Id::SlideEdit_handleimagetint_r:
+        case Id::SlideEdit_handleimagetint_g:
+        case Id::SlideEdit_handleimagetint_b:
+        case Id::SlideEdit_handleimagetint_a:
+        case Id::SlideEdit_handleimagelayer:
+        case Id::SlideEdit_sliderate:
         case Id::ListBox_textcolor_r:
         case Id::ListBox_textcolor_g:
         case Id::ListBox_textcolor_b:
@@ -624,6 +650,7 @@ namespace Ui
         case Id::LineEdit_textcolor:
         case Id::LineEdit_selectioncolor:
         case Id::LineEdit_selectiontextcolor:
+        case Id::SlideEdit_handleimagetint:
         case Id::ListBox_textcolor:
         case Id::ListBox_handletint:
         case Id::ListBox_selectioncolor:
@@ -649,6 +676,7 @@ namespace Ui
         case Id::Control_backgroundimage:
         case Id::Button_image:
         case Id::Slider_handleimage:
+        case Id::SlideEdit_handleimage:
         case Id::ListBox_handleimage:
         case Id::ComboBox_dropimage:
         case Id::ComboBox_handleimage:
@@ -660,6 +688,7 @@ namespace Ui
         case Id::Field_format:
         case Id::Button_text:
         case Id::LineEdit_text:
+        case Id::SlideEdit_format:
         case Id::ListBox_text:
         case Id::ComboBox_text:
           return Type::Text;
@@ -682,6 +711,7 @@ namespace Ui
         case Id::DragButton:
         case Id::Slider:
         case Id::LineEdit:
+        case Id::SlideEdit:
         case Id::ListBox:
         case Id::ComboBox:
         case Id::GroupBox:
@@ -759,6 +789,9 @@ namespace Ui
 
         case Id::LineEdit_filter:
           return &static_cast<LineEdit*>(item)->filter;
+
+        case Id::SlideEdit_precision:
+          return &static_cast<SlideEdit*>(item)->precision;
 
         case Id::ComboBox_listborderwidth:
           return &static_cast<ComboBox*>(item)->listborderwidth;
@@ -1213,6 +1246,33 @@ namespace Ui
         case Id::LineEdit_selectiontextcolor_a:
           return &static_cast<LineEdit*>(item)->selectiontextcolor.a;
 
+        case Id::SlideEdit_value:
+          return &static_cast<SlideEdit*>(item)->value;
+
+        case Id::SlideEdit_minvalue:
+          return &static_cast<SlideEdit*>(item)->minvalue;
+
+        case Id::SlideEdit_maxvalue:
+          return &static_cast<SlideEdit*>(item)->maxvalue;
+
+        case Id::SlideEdit_handleimagetint_r:
+          return &static_cast<SlideEdit*>(item)->handleimagetint.r;
+
+        case Id::SlideEdit_handleimagetint_g:
+          return &static_cast<SlideEdit*>(item)->handleimagetint.g;
+
+        case Id::SlideEdit_handleimagetint_b:
+          return &static_cast<SlideEdit*>(item)->handleimagetint.b;
+
+        case Id::SlideEdit_handleimagetint_a:
+          return &static_cast<SlideEdit*>(item)->handleimagetint.a;
+
+        case Id::SlideEdit_handleimagelayer:
+          return &static_cast<SlideEdit*>(item)->handleimagelayer;
+
+        case Id::SlideEdit_sliderate:
+          return &static_cast<SlideEdit*>(item)->sliderate;
+
         case Id::ListBox_textcolor_r:
           return &static_cast<ListBox*>(item)->textcolor.r;
 
@@ -1453,6 +1513,9 @@ namespace Ui
         case Id::LineEdit_selectiontextcolor:
           return &static_cast<LineEdit*>(item)->selectiontextcolor;
 
+        case Id::SlideEdit_handleimagetint:
+          return &static_cast<SlideEdit*>(item)->handleimagetint;
+
         case Id::ListBox_textcolor:
           return &static_cast<ListBox*>(item)->textcolor;
 
@@ -1534,6 +1597,9 @@ namespace Ui
         case Id::Slider_handleimage:
           return &static_cast<Slider*>(item)->handleimage;
 
+        case Id::SlideEdit_handleimage:
+          return &static_cast<SlideEdit*>(item)->handleimage;
+
         case Id::ListBox_handleimage:
           return &static_cast<ListBox*>(item)->handleimage;
 
@@ -1569,6 +1635,9 @@ namespace Ui
 
         case Id::LineEdit_text:
           return &static_cast<LineEdit*>(item)->text;
+
+        case Id::SlideEdit_format:
+          return &static_cast<SlideEdit*>(item)->format;
 
         case Id::ListBox_text:
           return &static_cast<ListBox*>(item)->text;
@@ -1658,6 +1727,9 @@ namespace Ui
 
         case Ui::Id::LineEdit:
           return context.create_item<Ui::LineEdit>(parent);
+
+        case Ui::Id::SlideEdit:
+          return context.create_item<Ui::SlideEdit>(parent);
 
         case Ui::Id::ListBox:
           return context.create_item<Ui::ListBox>(parent);
@@ -2115,6 +2187,34 @@ namespace Ui
           return "focused";
         case Id::LineEdit_filter:
           return "filter";
+        case Id::SlideEdit:
+          return "SlideEdit";
+        case Id::SlideEdit_value:
+          return "value";
+        case Id::SlideEdit_precision:
+          return "precision";
+        case Id::SlideEdit_format:
+          return "format";
+        case Id::SlideEdit_minvalue:
+          return "minvalue";
+        case Id::SlideEdit_maxvalue:
+          return "maxvalue";
+        case Id::SlideEdit_handleimage:
+          return "handleimage";
+        case Id::SlideEdit_handleimagetint:
+          return "handleimagetint";
+        case Id::SlideEdit_handleimagetint_r:
+          return "handleimagetint.r";
+        case Id::SlideEdit_handleimagetint_g:
+          return "handleimagetint.g";
+        case Id::SlideEdit_handleimagetint_b:
+          return "handleimagetint.b";
+        case Id::SlideEdit_handleimagetint_a:
+          return "handleimagetint.a";
+        case Id::SlideEdit_handleimagelayer:
+          return "handleimagelayer";
+        case Id::SlideEdit_sliderate:
+          return "sliderate";
         case Id::ListBox:
           return "ListBox";
         case Id::ListBox_text:
@@ -2836,6 +2936,68 @@ namespace Ui
       ids["LineEdit.selectiontextcolor.a"] = Id::LineEdit_selectiontextcolor_a;
       ids["LineEdit.focused"] = Id::LineEdit_focused;
       ids["LineEdit.filter"] = Id::LineEdit_filter;
+      ids["SlideEdit"] = Id::SlideEdit;
+      ids["SlideEdit.x"] = Id::Item_x;
+      ids["SlideEdit.y"] = Id::Item_y;
+      ids["SlideEdit.width"] = Id::Item_width;
+      ids["SlideEdit.height"] = Id::Item_height;
+      ids["SlideEdit.z"] = Id::Item_z;
+      ids["SlideEdit.scale"] = Id::Item_scale;
+      ids["SlideEdit.rotation"] = Id::Item_rotation;
+      ids["SlideEdit.opacity"] = Id::Item_opacity;
+      ids["SlideEdit.clip"] = Id::Item_clip;
+      ids["SlideEdit.visible"] = Id::Item_visible;
+      ids["SlideEdit.borderwidth"] = Id::Control_borderwidth;
+      ids["SlideEdit.bordercolor"] = Id::Control_bordercolor;
+      ids["SlideEdit.bordercolor.r"] = Id::Control_bordercolor_r;
+      ids["SlideEdit.bordercolor.g"] = Id::Control_bordercolor_g;
+      ids["SlideEdit.bordercolor.b"] = Id::Control_bordercolor_b;
+      ids["SlideEdit.bordercolor.a"] = Id::Control_bordercolor_a;
+      ids["SlideEdit.backgroundimage"] = Id::Control_backgroundimage;
+      ids["SlideEdit.backgroundcolor"] = Id::Control_backgroundcolor;
+      ids["SlideEdit.backgroundcolor.r"] = Id::Control_backgroundcolor_r;
+      ids["SlideEdit.backgroundcolor.g"] = Id::Control_backgroundcolor_g;
+      ids["SlideEdit.backgroundcolor.b"] = Id::Control_backgroundcolor_b;
+      ids["SlideEdit.backgroundcolor.a"] = Id::Control_backgroundcolor_a;
+      ids["SlideEdit.backgroundlayer"] = Id::Control_backgroundlayer;
+      ids["SlideEdit.backgroundslice"] = Id::Control_backgroundslice;
+      ids["SlideEdit.font"] = Id::Control_font;
+      ids["SlideEdit.fontheight"] = Id::Control_fontheight;
+      ids["SlideEdit.enabled"] = Id::Control_enabled;
+      ids["SlideEdit.hovered"] = Id::Control_hovered;
+      ids["SlideEdit.action"] = Id::Control_action;
+      ids["SlideEdit.text"] = Id::LineEdit_text;
+      ids["SlideEdit.textcolor"] = Id::LineEdit_textcolor;
+      ids["SlideEdit.textcolor.r"] = Id::LineEdit_textcolor_r;
+      ids["SlideEdit.textcolor.g"] = Id::LineEdit_textcolor_g;
+      ids["SlideEdit.textcolor.b"] = Id::LineEdit_textcolor_b;
+      ids["SlideEdit.textcolor.a"] = Id::LineEdit_textcolor_a;
+      ids["SlideEdit.padding"] = Id::LineEdit_padding;
+      ids["SlideEdit.selectioncolor"] = Id::LineEdit_selectioncolor;
+      ids["SlideEdit.selectioncolor.r"] = Id::LineEdit_selectioncolor_r;
+      ids["SlideEdit.selectioncolor.g"] = Id::LineEdit_selectioncolor_g;
+      ids["SlideEdit.selectioncolor.b"] = Id::LineEdit_selectioncolor_b;
+      ids["SlideEdit.selectioncolor.a"] = Id::LineEdit_selectioncolor_a;
+      ids["SlideEdit.selectiontextcolor"] = Id::LineEdit_selectiontextcolor;
+      ids["SlideEdit.selectiontextcolor.r"] = Id::LineEdit_selectiontextcolor_r;
+      ids["SlideEdit.selectiontextcolor.g"] = Id::LineEdit_selectiontextcolor_g;
+      ids["SlideEdit.selectiontextcolor.b"] = Id::LineEdit_selectiontextcolor_b;
+      ids["SlideEdit.selectiontextcolor.a"] = Id::LineEdit_selectiontextcolor_a;
+      ids["SlideEdit.focused"] = Id::LineEdit_focused;
+      ids["SlideEdit.filter"] = Id::LineEdit_filter;
+      ids["SlideEdit.value"] = Id::SlideEdit_value;
+      ids["SlideEdit.precision"] = Id::SlideEdit_precision;
+      ids["SlideEdit.format"] = Id::SlideEdit_format;
+      ids["SlideEdit.minvalue"] = Id::SlideEdit_minvalue;
+      ids["SlideEdit.maxvalue"] = Id::SlideEdit_maxvalue;
+      ids["SlideEdit.handleimage"] = Id::SlideEdit_handleimage;
+      ids["SlideEdit.handleimagetint"] = Id::SlideEdit_handleimagetint;
+      ids["SlideEdit.handleimagetint.r"] = Id::SlideEdit_handleimagetint_r;
+      ids["SlideEdit.handleimagetint.g"] = Id::SlideEdit_handleimagetint_g;
+      ids["SlideEdit.handleimagetint.b"] = Id::SlideEdit_handleimagetint_b;
+      ids["SlideEdit.handleimagetint.a"] = Id::SlideEdit_handleimagetint_a;
+      ids["SlideEdit.handleimagelayer"] = Id::SlideEdit_handleimagelayer;
+      ids["SlideEdit.sliderate"] = Id::SlideEdit_sliderate;
       ids["ListBox"] = Id::ListBox;
       ids["ListBox.x"] = Id::Item_x;
       ids["ListBox.y"] = Id::Item_y;

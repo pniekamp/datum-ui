@@ -240,6 +240,7 @@ namespace Ui
       {
         Arrow,
         Edit,
+        Hide,
       };
 
       Cursor cursor;

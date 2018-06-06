@@ -61,6 +61,7 @@ namespace Ui
           presspos.y = 0.5f * item->height / item->contentheight * item->height;
 
         pressitem = item;
+        inputaccepted = true;
       }
 
       if (input.deltamousez != 0)
@@ -87,8 +88,6 @@ namespace Ui
       {
         pressitem = nullptr;
       }
-
-      inputaccepted = true;
     }
 
     item->scrollx = clamp(item->scrollx, 0.0f, item->contentwidth - item->width);

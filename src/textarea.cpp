@@ -297,6 +297,7 @@ namespace Ui
         }
 
         pressitem = item;
+        inputaccepted = true;
       }
     }
 
@@ -394,8 +395,6 @@ namespace Ui
       {
         pressitem = nullptr;
       }
-
-      inputaccepted = true;
     }
 
     if (focusitem != item)
