@@ -55,7 +55,7 @@ namespace
       switch (verticalalign)
       {
         case Ui::TextArea::VerticalAlign::Middle:
-          y += 0.5f * (areaheight - lines * lineheight);
+          y += floor(0.5f * (areaheight - lines * lineheight));
           break;
 
         case Ui::TextArea::VerticalAlign::Bottom:
@@ -96,7 +96,7 @@ namespace
         break;
 
       case Ui::TextArea::HorizontalAlign::Center:
-        x += 0.5f * (areawidth - linewidth);
+        x += floor(0.5f * (areawidth - linewidth));
         break;
 
       case Ui::TextArea::HorizontalAlign::Right:

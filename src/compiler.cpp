@@ -28,7 +28,7 @@ void compile(pathstring const &src, pathstring const &dst, string const &classna
 
   cout << "    ByteCode: " << bytecode.size() << " bytes" << endl;
 
-  codegen_ui(dst, classname, bytecode.data(), bytecode.size());
+  codegen_ui(classname, bytecode.data(), bytecode.size(), dst);
 }
 
 

@@ -12,4 +12,4 @@
 #include <string>
 
 ///////////////////////// codegen_ui ////////////////////////////////////////
-void codegen_ui(std::string const &filename, std::string const &name, uint8_t const *bytecode, size_t length);
+void codegen_ui(std::string const &name, uint8_t const *bytecode, size_t length, std::string const &filename);

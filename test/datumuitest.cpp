@@ -54,7 +54,7 @@ void datumuitest_init(PlatformInterface &platform)
 
   auto b = parse_ui(load_ui("./test.ui"));
 
-  codegen_ui("test_p.h", "Test", b.data(), b.size());
+  codegen_ui("Test", b.data(), b.size(), "test_p.h");
 
   LoaderItemList items(platform.gamescratchmemory);
   auto c = create_ui(state.uicontext, b.data(), b.size(), &items, platform.gamescratchmemory);

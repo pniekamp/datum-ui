@@ -474,7 +474,7 @@ namespace
 }
 
 ///////////////////////// codegen_ui ////////////////////////////////////////
-void codegen_ui(string const &filename, string const &name, uint8_t const *bytecode, size_t length)
+void codegen_ui(string const &name, uint8_t const *bytecode, size_t length, string const &filename)
 {
   CodeGen generator;
 

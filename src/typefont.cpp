@@ -278,7 +278,7 @@ void ResourceManager::update<TypeFont>(TypeFont const *font, uint32_t codepoint)
       glyph->dimension = Vec2(width + 2, height + 2);
       glyph->sheet = slot->sheets[slot->activesheet];
 
-      update(glyph->sheet, slot->transferlump, slot->activesheetused, 0, paddedwidth, paddedheight, 0, 0);
+      update(glyph->sheet, slot->transferlump, 0, slot->activesheetused, 0, paddedwidth, paddedheight, 0, 0);
 
       slot->activesheetused += paddedwidth;
     }
@@ -525,7 +525,7 @@ void draw_text(SpriteList &spritelist, SpriteList::BuildState &buildstate, Vec2 
 
     if (glyph)
     {
-      if (buildstate.texture != glyph->sheet->texture || buildstate.color != tint)
+      if (buildstate.image != glyph->sheet->texture || buildstate.color != tint)
       {
         spritelist.push_material(buildstate, glyph->sheet->texture, tint);
       }
@@ -579,7 +579,7 @@ void draw_text(SpriteList &spritelist, SpriteList::BuildState &buildstate, Vec2 
 
   else if (alignment & TextAlign::Center)
   {
-    cursor += (0.5f*(rect.min.x + rect.max.x - font->width(str))) * xbasis;
+    cursor += floor(0.5f*(rect.min.x + rect.max.x - font->width(str))) * xbasis;
   }
 
   else if (alignment & TextAlign::Right)
@@ -594,7 +594,7 @@ void draw_text(SpriteList &spritelist, SpriteList::BuildState &buildstate, Vec2 
 
   else if (alignment & TextAlign::Middle)
   {
-    cursor += (0.5f*(rect.min.y + rect.max.y - font->height()) + font->ascent*font->pixelscale) * ybasis;
+    cursor += floor(0.5f*(rect.min.y + rect.max.y - font->height()) + font->ascent*font->pixelscale) * ybasis;
   }
 
   else if (alignment & TextAlign::BaseLine)
