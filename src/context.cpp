@@ -85,6 +85,7 @@ namespace Ui
     popupitem = nullptr;
     popupowner = nullptr;
     elapsed = 0.0f;
+    timeditem = nullptr;
   }
 
 

@@ -262,6 +262,7 @@ namespace Ui
       lml::Vec2 presspos;
       bool dragging;
       float elapsed;
+      Ui::Item *timeditem;
 
       Ui::Item *ui;
 

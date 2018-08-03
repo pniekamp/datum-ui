@@ -43,12 +43,9 @@ namespace Ui
       }
     }
 
-    if (focusitem == item)
+    if (timeditem == item)
     {
       elapsed += dt;
-
-      if (hoveritem != item || elapsed > DoubleClickTime)
-        focusitem = nullptr;
     }
 
     if (pressitem == item)
@@ -61,12 +58,12 @@ namespace Ui
         {
           actions.push_back(Action{ item->action, Button::Clicked, ui, item });
 
-          if (focusitem == item)
+          if (timeditem == item && elapsed < DoubleClickTime)
           {
             actions.push_back(Action{ item->action, Button::DoubleClicked, ui, item });
           }
 
-          focusitem = item;
+          timeditem = item;
           elapsed = 0;
         }
 
