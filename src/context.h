@@ -212,7 +212,7 @@ namespace Ui
       void bind(Ui::Item *item, T &variable, Expression const &value);
 
       template<typename T>
-      Animation *animate(Ui::Item *item, T &variable, Expression const &enabled = stack_expression<5>{true}, long flags = 0, float duration = 0.250f);
+      Animation *animate(Ui::Item *item, T &variable, Expression const &enabled = StackExpression<5>{true}, long flags = 0, float duration = 0.250f);
 
       void destroy(Ui::Item *item);
 
@@ -292,7 +292,7 @@ namespace Ui
         void (Context::*prepare)(Node*);
         void (Context::*render)(SpriteList&, SpriteList::BuildState&, Node*);
 
-        std::deque<basic_expression<StackAllocatorWithFreelist<uint8_t>>, std::scoped_allocator_adaptor<StackAllocatorWithFreelist<basic_expression<StackAllocatorWithFreelist<uint8_t>>>>> expressions;
+        std::deque<BasicExpression<StackAllocatorWithFreelist<uint8_t>>, std::scoped_allocator_adaptor<StackAllocatorWithFreelist<BasicExpression<StackAllocatorWithFreelist<uint8_t>>>>> expressions;
 
         Node(size_t size, StackAllocatorWithFreelist<> const &allocator)
           : size(size),

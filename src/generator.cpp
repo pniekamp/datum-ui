@@ -276,7 +276,7 @@ namespace
 
       currentexpr = "expr" + toa(counter++);
 
-      createstr += "  auto " + currentexpr + " = Ui::stack_expression<" + toa(size) + ">{ ";
+      createstr += "  auto " + currentexpr + " = Ui::StackExpression<" + toa(size) + ">{ ";
       for(size_t i = 0; i < size; ++i)
         createstr += ((i != 0) ? ", " : "") + toa((int)*(ptr + 5 + i));
       createstr += " };\n";

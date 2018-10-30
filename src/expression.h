@@ -27,46 +27,30 @@ namespace Ui
       literal, intvariable, boolvariable, floatvariable,
     };
 
-    size_t size;
-    uint8_t const *data;
-
-    protected:
-      Expression() = default;
+    virtual size_t size() const = 0;
+    virtual uint8_t const *data() const = 0;
   };
 
   template<size_t N>
-  struct stack_expression : Expression
+  struct StackExpression : Expression
   {
-    stack_expression()
-    {
-      size = bytecode.size();
-      data = bytecode.data();
-    }
+    public:
 
-    stack_expression(std::initializer_list<uint8_t> v)
-      : stack_expression()
-    {
-      bytecode = ((v.size() <= N) ? leap::gather(v.begin(), leap::make_index_sequence<0, N>()) : throw 0);
-    }
+      StackExpression() = default;
 
-    stack_expression(stack_expression const &other)
-      : stack_expression()
-    {
-      bytecode = other.bytecode;
-    }
+      StackExpression(std::initializer_list<uint8_t> v)
+        : bytecode((v.size() <= N) ? leap::gather(v.begin(), leap::make_index_sequence<0, N>()) : throw 0)
+      {
+      }
 
-    stack_expression &operator=(stack_expression const &other)
-    {
-      bytecode = other.bytecode;
+      size_t size() const final { return bytecode.size(); }
+      uint8_t const *data() const final { return bytecode.data(); }
 
-      return *this;
-    }
-
-    void patch(size_t offset, OpCode op) { replace(offset, &op, 1); }
-    void patch(size_t offset, float literal) { patch(offset, OpCode::literal); replace(offset + 1, &literal, sizeof(literal)); }
-    void patch(size_t offset, int const *variable) { patch(offset, OpCode::intvariable); replace(offset + 1, &variable, sizeof(variable)); }
-    void patch(size_t offset, bool const *variable) { patch(offset, OpCode::boolvariable); replace(offset + 1, &variable, sizeof(variable)); }
-    void patch(size_t offset, float const *variable) { patch(offset, OpCode::floatvariable); replace(offset + 1, &variable, sizeof(variable)); }
+      void patch(size_t offset, OpCode op) { replace(offset, &op, 1); }
+      void patch(size_t offset, float literal) { patch(offset, OpCode::literal); replace(offset + 1, &literal, sizeof(literal)); }
+      void patch(size_t offset, int const *variable) { patch(offset, OpCode::intvariable); replace(offset + 1, &variable, sizeof(variable)); }
+      void patch(size_t offset, bool const *variable) { patch(offset, OpCode::boolvariable); replace(offset + 1, &variable, sizeof(variable)); }
+      void patch(size_t offset, float const *variable) { patch(offset, OpCode::floatvariable); replace(offset + 1, &variable, sizeof(variable)); }
 
     private:
 
@@ -81,57 +65,36 @@ namespace Ui
   };
 
   template<class Alloc>
-  struct basic_expression : Expression
+  struct BasicExpression : Expression
   {
     public:
 
       typedef Alloc allocator_type;
 
-      basic_expression(Alloc const &alloc = Alloc())
+      BasicExpression(Alloc const &alloc = Alloc())
         : bytecode(alloc)
       {
-        size = 0;
       }
 
-      basic_expression(Expression const &other, Alloc const &alloc = Alloc())
-        : bytecode(other.data, other.data + other.size, alloc)
+      BasicExpression(Expression const &other, Alloc const &alloc = Alloc())
+        : bytecode(other.data(), other.data() + other.size(), alloc)
       {
-        size = bytecode.size();
-        data = bytecode.data();
       }
 
-      basic_expression(uint8_t const *ptr, size_t n, Alloc const &alloc = Alloc())
-        : bytecode(ptr, n, alloc)
+      BasicExpression(uint8_t const *ptr, size_t n, Alloc const &alloc = Alloc())
+        : bytecode(ptr, ptr + n, alloc)
       {
-        size = bytecode.size();
-        data = bytecode.data();
       }
 
-      basic_expression(basic_expression const &other)
-        : bytecode(other.bytecode)
-      {
-        size = bytecode.size();
-        data = bytecode.data();
-      }
-
-      basic_expression(basic_expression const &other, Alloc const &alloc)
+      BasicExpression(BasicExpression const &other, Alloc const &alloc)
         : bytecode(other.bytecode, alloc)
       {
-        size = bytecode.size();
-        data = bytecode.data();
       }
 
-      basic_expression &operator=(basic_expression const &other)
-      {
-        bytecode = other.bytecode;
+      size_t size() const final { return bytecode.size(); }
+      uint8_t const *data() const final { return bytecode.data(); }
 
-        size = bytecode.size();
-        data = bytecode.data();
-
-        return *this;
-      }
-
-      void clear() { bytecode.clear(); size = 0; }
+      void clear() { bytecode.clear(); }
 
       void push(OpCode op) { append(&op, 1); }
       void push(float literal) { push(OpCode::literal); append(&literal, sizeof(literal)); }
@@ -151,9 +114,6 @@ namespace Ui
       void append(void const *ptr, size_t n)
       {
         bytecode.insert(bytecode.end(), (uint8_t const *)ptr, (uint8_t const *)ptr + n);
-
-        size = bytecode.size();
-        data = bytecode.data();
       }
 
       void replace(size_t offset, void const *ptr, size_t n)
@@ -408,11 +368,11 @@ namespace Ui
 
   inline float evaluate(Expression const &expression)
   {
-    return evaluate(expression.data, expression.size);
+    return evaluate(expression.data(), expression.size());
   }
 
   inline float evaluate(Expression const *expression)
   {
-    return evaluate(expression->data, expression->size);
+    return evaluate(expression->data(), expression->size());
   }
 }

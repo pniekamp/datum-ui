@@ -14,8 +14,6 @@ using namespace std;
 using namespace lml;
 using namespace DatumPlatform;
 
-static constexpr float KeyRepeatTime = 0.05f;
-
 namespace Ui
 {
   //|---------------------- ListBox -------------------------------------------
@@ -55,56 +53,47 @@ namespace Ui
 
     if (focusitem == item)
     {
-      elapsed += dt;
-
-      uint8_t navkeys[] = { KB_KEY_UP, KB_KEY_DOWN, KB_KEY_HOME, KB_KEY_END };
-
-      for(auto key : navkeys)
+      for(auto i = 0; i < input.eventcount; ++i)
       {
-        for(int i = 0; i < input.keys[key].presscount((elapsed > KeyRepeatTime)); ++i)
+        auto &evt = input.events[i];
+
+        if (evt.type == GameInput::Event::Key)
         {
-          if (key == KB_KEY_UP)
+          switch (evt.key)
           {
-            item->selection = min(max(0, item->selection - 1), (int)(item->contentheight / lineheight) - 1);
-          }
+            case KB_KEY_UP:
+              item->selection = min(max(0, item->selection - 1), (int)(item->contentheight / lineheight) - 1);
+              break;
 
-          if (key == KB_KEY_DOWN)
-          {
-            item->selection = min(item->selection + 1, (int)(item->contentheight / lineheight) - 1);
-          }
+            case KB_KEY_DOWN:
+              item->selection = min(item->selection + 1, (int)(item->contentheight / lineheight) - 1);
+              break;
 
-          if (key == KB_KEY_HOME)
-          {
-            item->selection = min(0, (int)(item->contentheight / lineheight) - 1);
-          }
+            case KB_KEY_HOME:
+              item->selection = min(0, (int)(item->contentheight / lineheight) - 1);
+              break;
 
-          if (key == KB_KEY_END)
-          {
-            item->selection = (int)(item->contentheight / lineheight) - 1;
-          }
-
-          if (item->selection != -1)
-          {
-            auto cursory = item->selection * lineheight - item->scrolly;
-
-            if (cursory < 0)
-            {
-              item->scrolly -= 0.0f - cursory;
-            }
-
-            if (cursory > item->height - lineheight)
-            {
-              item->scrolly += cursory - item->height + lineheight;
-            }
+            case KB_KEY_END:
+              item->selection = (int)(item->contentheight / lineheight) - 1;
+              break;
           }
         }
-
-        if (input.keys[key].pressed())
-          elapsed = -10*KeyRepeatTime;
       }
 
-      if (elapsed > KeyRepeatTime)
-        elapsed -= KeyRepeatTime;
+      if (item->selection != -1)
+      {
+        auto cursory = item->selection * lineheight - item->scrolly;
+
+        if (cursory < 0)
+        {
+          item->scrolly -= 0.0f - cursory;
+        }
+
+        if (cursory > item->height - lineheight)
+        {
+          item->scrolly += cursory - item->height + lineheight;
+        }
+      }
 
       if (input.mousebuttons[GameInput::Left].pressed() && pressitem != item)
         focusitem = nullptr;

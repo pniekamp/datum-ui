@@ -16,7 +16,6 @@ using namespace lml;
 using namespace DatumPlatform;
 
 static constexpr float MinDragDistance = 3.0f;
-static constexpr float KeyRepeatTime = 0.05f;
 
 namespace Ui
 {
@@ -67,8 +66,6 @@ namespace Ui
 
     if (focusitem == item)
     {
-      elapsed += dt;
-
       if (node->strings.empty())
         node->strings.resize(1);
 
@@ -84,158 +81,139 @@ namespace Ui
 
       cursor = clamp(cursor, 0, (int)text.size());
 
-      if (input.keys['A'].pressed() && (input.modifiers & GameInput::Modifiers::Control))
+      for(auto i = 0; i < input.eventcount; ++i)
       {
-        selectionbeg = 0;
-        selectionend = cursor = area.position(cursor, TextArea::End);
-      }
+        auto &evt = input.events[i];
 
-      if (input.keys[KB_KEY_DELETE].pressed() && item->filter != Ui::LineEdit::Readonly)
-      {
-        if (selectionbeg != selectionend)
+        if (evt.type == GameInput::Event::Key)
         {
-          text.erase(min(selectionbeg, selectionend), abs(selectionend - selectionbeg));
+          if (evt.key == 'A' && (evt.modifiers & GameInput::Modifiers::Control))
+          {
+            selectionbeg = 0;
+            selectionend = cursor = area.position(cursor, TextArea::End);
+          }
 
-          selectionbeg = selectionend = cursor = min(selectionbeg, selectionend);
-        }
-        else
-        {
-          if ((size_t)cursor < text.size())
+          if (evt.key == KB_KEY_LEFT || evt.key == KB_KEY_RIGHT || evt.key == KB_KEY_HOME || evt.key == KB_KEY_END)
+          {
+            switch (evt.key)
+            {
+              case KB_KEY_LEFT:
+                cursor = area.position(cursor, (evt.modifiers & GameInput::Modifiers::Control) ? TextArea::WordLeft : TextArea::CharLeft);
+                break;
+
+              case KB_KEY_RIGHT:
+                cursor = area.position(cursor, (evt.modifiers & GameInput::Modifiers::Control) ? TextArea::WordRight : TextArea::CharRight);
+                break;
+
+              case KB_KEY_HOME:
+                cursor = area.position(cursor, (evt.modifiers & GameInput::Modifiers::Control) ? TextArea::Start : TextArea::LineStart);
+                break;
+
+              case KB_KEY_END:
+                cursor = area.position(cursor, (evt.modifiers & GameInput::Modifiers::Control) ? TextArea::End : TextArea::LineEnd);
+                break;
+            }
+
+            if (!(evt.modifiers & GameInput::Modifiers::Shift))
+              selectionbeg = cursor;
+
+            selectionend = cursor;
+          }
+
+          if (evt.key == KB_KEY_DELETE && item->filter != Ui::LineEdit::Readonly)
           {
             auto beg = cursor;
             auto end = area.position(cursor, TextArea::CharRight);
 
+            if (selectionbeg != selectionend)
+            {
+              beg = min(selectionbeg, selectionend);
+              end = max(selectionbeg, selectionend);
+            }
+
             text.erase(beg, end - beg);
 
             selectionbeg = selectionend = cursor = beg;
+
+            actions.push_back(Action{ item->action, LineEdit::Changed, ui, item });
           }
-        }
 
-        actions.push_back(Action{ item->action, LineEdit::Changed, ui, item });
-      }
-
-      if (input.keys[KB_KEY_BACKSPACE].pressed() && item->filter != Ui::LineEdit::Readonly)
-      {
-        if (selectionbeg != selectionend)
-        {
-          text.erase(min(selectionbeg, selectionend), abs(selectionend - selectionbeg));
-
-          selectionbeg = selectionend = cursor = min(selectionbeg, selectionend);
-        }
-        else
-        {
-          if (cursor > 0)
+          if (evt.key == KB_KEY_BACKSPACE && item->filter != Ui::LineEdit::Readonly)
           {
-            auto end = cursor;
             auto beg = area.position(cursor, TextArea::CharLeft);
+            auto end = cursor;
+
+            if (selectionbeg != selectionend)
+            {
+              beg = min(selectionbeg, selectionend);
+              end = max(selectionbeg, selectionend);
+            }
 
             text.erase(beg, end - beg);
 
             selectionbeg = selectionend = cursor = beg;
+
+            actions.push_back(Action{ item->action, LineEdit::Changed, ui, item });
           }
         }
 
-        actions.push_back(Action{ item->action, LineEdit::Changed, ui, item });
-      }
-
-      if (input.text[0] != 0)
-      {
-        int len = 0;
-        char intputtext[128];
-        for(auto ch = input.text; *ch; ++ch)
+        if (evt.type == GameInput::Event::Text)
         {
-          bool accept = false;
-
-          if (item->filter & Ui::LineEdit::Alpha)
-            accept |= (isalpha(*ch) != 0);
-
-          if (item->filter & Ui::LineEdit::Digit)
-            accept |= (isdigit(*ch) != 0);
-
-          if (item->filter & Ui::LineEdit::Integer)
-            accept |= (isdigit(*ch) != 0 || *ch == '-' || *ch == '+');
-
-          if (item->filter & Ui::LineEdit::Decimal)
-            accept |= (isdigit(*ch) != 0 || *ch == '-' || *ch == '+' || *ch == '.' || *ch == 'e' || *ch == 'E');
-
-          if (item->filter & Ui::LineEdit::Punct)
-            accept |= (ispunct(*ch) != 0);
-
-          if (item->filter & Ui::LineEdit::Space)
-            accept |= (*ch == ' ');
-
-          if (item->filter & Ui::LineEdit::Extended)
-            accept |= ((*ch & 0x80) != 0);
-
-          if (accept)
-            intputtext[len++] = *ch;
-        }
-
-        if (len != 0)
-        {
-          if (selectionbeg != selectionend)
+          int len = 0;
+          char intputtext[128];
+          for(auto ch = evt.text; *ch; ++ch)
           {
-            text.erase(min(selectionbeg, selectionend), abs(selectionend - selectionbeg));
+            bool accept = false;
 
-            selectionbeg = selectionend = cursor = min(selectionbeg, selectionend);
+            if (item->filter & Ui::LineEdit::Alpha)
+              accept |= (isalpha(*ch) != 0);
+
+            if (item->filter & Ui::LineEdit::Digit)
+              accept |= (isdigit(*ch) != 0);
+
+            if (item->filter & Ui::LineEdit::Integer)
+              accept |= (isdigit(*ch) != 0 || *ch == '-' || *ch == '+');
+
+            if (item->filter & Ui::LineEdit::Decimal)
+              accept |= (isdigit(*ch) != 0 || *ch == '-' || *ch == '+' || *ch == '.' || *ch == 'e' || *ch == 'E');
+
+            if (item->filter & Ui::LineEdit::Punct)
+              accept |= (ispunct(*ch) != 0);
+
+            if (item->filter & Ui::LineEdit::Space)
+              accept |= (*ch == ' ');
+
+            if (item->filter & Ui::LineEdit::Extended)
+              accept |= ((*ch & 0x80) != 0);
+
+            if (accept)
+              intputtext[len++] = *ch;
           }
 
-          text.insert(cursor, intputtext, len);
+          if (len != 0)
+          {
+            if (selectionbeg != selectionend)
+            {
+              auto beg = min(selectionbeg, selectionend);
+              auto end = max(selectionbeg, selectionend);
 
-          selectionbeg = selectionend = cursor = cursor + len;
+              text.erase(beg, end - beg);
 
-          actions.push_back(Action{ item->action, LineEdit::Changed, ui, item });
+              cursor = beg;
+            }
+
+            text.insert(cursor, intputtext, len);
+
+            selectionbeg = selectionend = cursor = cursor + len;
+
+            actions.push_back(Action{ item->action, LineEdit::Changed, ui, item });
+          }
         }
       }
 
       item->text = text.c_str();
 
-      uint8_t navkeys[] = { KB_KEY_LEFT, KB_KEY_RIGHT, KB_KEY_HOME, KB_KEY_END };
-
-      for(auto key : navkeys)
-      {
-        for(int i = 0; i < input.keys[key].presscount((elapsed > KeyRepeatTime)); ++i)
-        {
-          if (key == KB_KEY_LEFT)
-          {
-            if (input.modifiers & GameInput::Modifiers::Control)
-              item->cursor = area.position(item->cursor, TextArea::WordLeft);
-            else
-              item->cursor = area.position(item->cursor, TextArea::CharLeft);
-          }
-
-          if (key == KB_KEY_RIGHT)
-          {
-            if (input.modifiers & GameInput::Modifiers::Control)
-              item->cursor = area.position(item->cursor, TextArea::WordRight);
-            else
-              item->cursor = area.position(item->cursor, TextArea::CharRight);
-          }
-
-          if (key == KB_KEY_HOME)
-          {
-            item->cursor = area.position(item->cursor, TextArea::Start);
-          }
-
-          if (key == KB_KEY_END)
-          {
-            item->cursor = area.position(item->cursor, TextArea::End);
-          }
-
-          if (!(input.modifiers & GameInput::Modifiers::Shift))
-            item->selectionbeg = item->cursor;
-
-          item->selectionend = item->cursor;
-        }
-
-        if (input.keys[key].pressed())
-          elapsed = -10*KeyRepeatTime;
-      }
-
-      if (elapsed > KeyRepeatTime)
-        elapsed -= KeyRepeatTime;
-
-      auto cursorpos = area.position(item->cursor);
+      auto cursorpos = area.position(cursor);
 
       if (cursorpos.x < item->x + padding)
       {

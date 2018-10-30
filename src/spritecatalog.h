@@ -41,7 +41,7 @@ namespace Ui
 
       SpriteAtlas const *find(leap::string_view name) const;
 
-      Sprite find(leap::string_view name, lml::Rect2 region, lml::Vec2 align = { 0.0f, 0.0f }) const;
+      Sprite find(leap::string_view name, lml::Rect2 region, lml::Vec2 pivot = { 0.0f, 0.0f }) const;
 
       void request(DatumPlatform::PlatformInterface &platform, SpriteAtlas const *spriteatlas);
       void request(DatumPlatform::PlatformInterface &platform, Sprite const &sprite);

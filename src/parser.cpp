@@ -120,7 +120,7 @@ namespace
 
     struct ParsedExpression
     {
-      Ui::basic_expression<std::allocator<uint8_t>> bytecode;
+      Ui::BasicExpression<std::allocator<uint8_t>> bytecode;
 
       vector<pair<size_t, string>> patchtable;
 
@@ -136,7 +136,7 @@ namespace
 
       void push(string const &variable)
       {
-        patchtable.emplace_back(bytecode.size, variable);
+        patchtable.emplace_back(bytecode.size(), variable);
 
         bytecode.push((float*)nullptr);
       }
@@ -394,10 +394,10 @@ namespace
 
     void push_beginexpr(vector<uint8_t> &bytecode, Ui::Expression const &expr)
     {
-      uint32_t size = uint32_t(expr.size);
+      uint32_t size = uint32_t(expr.size());
       bytecode.insert(bytecode.end(), (uint8_t)Ui::Op::BeginExpr);
       bytecode.insert(bytecode.end(), (uint8_t*)&size, (uint8_t*)&size + sizeof(size));
-      bytecode.insert(bytecode.end(), (uint8_t const *)expr.data, (uint8_t const *)expr.data + expr.size);
+      bytecode.insert(bytecode.end(), (uint8_t const *)expr.data(), (uint8_t const *)expr.data() + expr.size());
     }
 
     void push_patchexpr(vector<uint8_t> &bytecode, uint32_t offset, ItemReference item)

@@ -446,8 +446,8 @@ namespace
       Ui::Context &context;
 
       Ui::Item *currentitem = nullptr;
-      vector<Ui::Item*, StackAllocator<Ui::Item*>> itemstack;
-      Ui::basic_expression<StackAllocator<uint8_t>> currentexpr;
+      Ui::ItemList itemstack;
+      Ui::BasicExpression<StackAllocator<uint8_t>> currentexpr;
 
       vector<pair<leap::string_view, Ui::Item*>, StackAllocator<pair<leap::string_view, Ui::Item*>>> itemlist;
   };

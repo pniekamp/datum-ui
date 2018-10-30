@@ -15,7 +15,6 @@ using namespace lml;
 using namespace DatumPlatform;
 
 static constexpr float MinDragDistance = 3.0f;
-static constexpr float KeyRepeatTime = 0.05f;
 
 namespace
 {
@@ -303,74 +302,54 @@ namespace Ui
 
     if (focusitem == item)
     {
-      elapsed += dt;
-
-      if (input.keys['A'].pressed() && (input.modifiers & GameInput::Modifiers::Control))
+      for(auto i = 0; i < input.eventcount; ++i)
       {
-        item->selectionbeg = 0;
-        item->selectionend = item->cursor = item->position(item->cursor, TextArea::End);
-      }
+        auto &evt = input.events[i];
 
-      uint8_t navkeys[] = { KB_KEY_LEFT, KB_KEY_RIGHT, KB_KEY_UP, KB_KEY_DOWN, KB_KEY_HOME, KB_KEY_END };
-
-      for(auto key : navkeys)
-      {
-        for(int i = 0; i < input.keys[key].presscount((elapsed > KeyRepeatTime)); ++i)
+        if (evt.type == GameInput::Event::Key)
         {
-          if (key == KB_KEY_LEFT)
+          if (evt.key == 'A' && (evt.modifiers & GameInput::Modifiers::Control))
           {
-            if (input.modifiers & GameInput::Modifiers::Control)
-              item->cursor = item->position(item->cursor, TextArea::WordLeft);
-            else
-              item->cursor = item->position(item->cursor, TextArea::CharLeft);
+            item->selectionbeg = 0;
+            item->selectionend = item->cursor = item->position(item->cursor, TextArea::End);
           }
 
-          if (key == KB_KEY_RIGHT)
+          if (evt.key == KB_KEY_LEFT || evt.key == KB_KEY_RIGHT || evt.key == KB_KEY_UP || evt.key == KB_KEY_DOWN || evt.key == KB_KEY_HOME || evt.key == KB_KEY_END)
           {
-            if (input.modifiers & GameInput::Modifiers::Control)
-              item->cursor = item->position(item->cursor, TextArea::WordRight);
-            else
-              item->cursor = item->position(item->cursor, TextArea::CharRight);
+            switch (evt.key)
+            {
+              case KB_KEY_LEFT:
+                item->cursor = item->position(item->cursor, (evt.modifiers & GameInput::Modifiers::Control) ? TextArea::WordLeft : TextArea::CharLeft);
+                break;
+
+              case KB_KEY_RIGHT:
+                item->cursor = item->position(item->cursor, (evt.modifiers & GameInput::Modifiers::Control) ? TextArea::WordRight : TextArea::CharRight);
+                break;
+
+              case KB_KEY_UP:
+                item->cursor = item->position(item->cursor, TextArea::LineUp);
+                break;
+
+              case KB_KEY_DOWN:
+                item->cursor = item->position(item->cursor, TextArea::LineDown);
+                break;
+
+              case KB_KEY_HOME:
+                item->cursor = item->position(item->cursor, (evt.modifiers & GameInput::Modifiers::Control) ? TextArea::Start : TextArea::LineStart);
+                break;
+
+              case KB_KEY_END:
+                item->cursor = item->position(item->cursor, (evt.modifiers & GameInput::Modifiers::Control) ? TextArea::End : TextArea::LineEnd);
+                break;
+            }
+
+            if (!(evt.modifiers & GameInput::Modifiers::Shift))
+              item->selectionbeg = item->cursor;
+
+            item->selectionend = item->cursor;
           }
-
-          if (key == KB_KEY_UP)
-          {
-            item->cursor = item->position(item->cursor, TextArea::LineUp);
-          }
-
-          if (key == KB_KEY_DOWN)
-          {
-            item->cursor = item->position(item->cursor, TextArea::LineDown);
-          }
-
-          if (key == KB_KEY_HOME)
-          {
-            if (input.modifiers & GameInput::Modifiers::Control)
-              item->cursor = item->position(item->cursor, TextArea::Start);
-            else
-              item->cursor = item->position(item->cursor, TextArea::LineStart);
-          }
-
-          if (key == KB_KEY_END)
-          {
-            if (input.modifiers & GameInput::Modifiers::Control)
-              item->cursor = item->position(item->cursor, TextArea::End);
-            else
-              item->cursor = item->position(item->cursor, TextArea::LineEnd);
-          }
-
-          if (!(input.modifiers & GameInput::Modifiers::Shift))
-            item->selectionbeg = item->cursor;
-
-          item->selectionend = item->cursor;
         }
-
-        if (input.keys[key].pressed())
-          elapsed = -10*KeyRepeatTime;
       }
-
-      if (elapsed > KeyRepeatTime)
-        elapsed -= KeyRepeatTime;
 
       if (input.mousebuttons[GameInput::Left].pressed() && pressitem != item)
         focusitem = nullptr;

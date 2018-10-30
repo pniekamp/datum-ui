@@ -91,7 +91,7 @@ namespace Ui
 
 
   ///////////////////////// SpriteCatalog::find ///////////////////////////////
-  Sprite SpriteCatalog::find(leap::string_view name, Rect2 region, Vec2 align) const
+  Sprite SpriteCatalog::find(leap::string_view name, Rect2 region, Vec2 pivot) const
   {
     leap::threadlib::SyncLock lock(m_mutex);
 
@@ -103,7 +103,7 @@ namespace Ui
       {
         for(size_t i = 0; i < entry->instancecount; ++i)
         {
-          if (entry->instances[i]->extent == extent && entry->instances[i]->align == align)
+          if (entry->instances[i]->extent == extent && entry->instances[i]->pivot == pivot)
             return Sprite(entry->instances[i], entry->refcounts[i]);
         }
 
@@ -111,7 +111,7 @@ namespace Ui
         {
           size_t i = entry->instancecount++;
 
-          entry->instances[i] = m_resources->create<SpriteImage>(entry->spriteatlas, region, align);
+          entry->instances[i] = m_resources->create<SpriteImage>(entry->spriteatlas, region, pivot);
 
           entry->refcounts[i]->store(0);
 
