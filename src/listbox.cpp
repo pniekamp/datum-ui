@@ -77,21 +77,21 @@ namespace Ui
               item->selection = (int)(item->contentheight / lineheight) - 1;
               break;
           }
-        }
-      }
 
-      if (item->selection != -1)
-      {
-        auto cursory = item->selection * lineheight - item->scrolly;
+          if (item->selection != -1)
+          {
+            auto cursory = item->selection * lineheight - item->scrolly;
 
-        if (cursory < 0)
-        {
-          item->scrolly -= 0.0f - cursory;
-        }
+            if (cursory < 0)
+            {
+              item->scrolly -= 0.0f - cursory;
+            }
 
-        if (cursory > item->height - lineheight)
-        {
-          item->scrolly += cursory - item->height + lineheight;
+            if (cursory > item->height - lineheight)
+            {
+              item->scrolly += cursory - item->height + lineheight;
+            }
+          }
         }
       }
 
