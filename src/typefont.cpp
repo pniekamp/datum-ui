@@ -14,18 +14,15 @@ using namespace std;
 using namespace lml;
 using leap::extentof;
 
-namespace
-{
-  //
-  // STB TrueType
-  // authored from 2009-2016 by Sean Barrett / RAD Game Tools
-  //
+//
+// STB TrueType
+// authored from 2009-2016 by Sean Barrett / RAD Game Tools
+//
 
-# define STB_TRUETYPE_IMPLEMENTATION
-# include "stb_truetype.h"
+#define STB_TRUETYPE_IMPLEMENTATION
+#include "stb_truetype.h"
 
-  static_assert(sizeof(stbtt_fontinfo) <= sizeof(TypeFont::fontinfo), "FontInfo Size Mismatch");
-}
+static_assert(sizeof(stbtt_fontinfo) <= sizeof(TypeFont::fontinfo), "FontInfo Size Mismatch");
 
 namespace
 {
